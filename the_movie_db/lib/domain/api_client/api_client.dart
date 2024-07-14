@@ -1,7 +1,8 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:the_movie_db/domain/api_client/request_templates.dart';
-import 'package:the_movie_db/domain/entities/movie_details.dart';
-import 'package:the_movie_db/domain/entities/popular_movie_response.dart';
+import 'package:the_movie_db/domain/entities/actors/actor_details.dart';
+import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
+import 'package:the_movie_db/domain/entities/movies/popular_movie_response.dart';
 
 class ApiClient {
   static const String _host = 'https://api.themoviedb.org/3';
@@ -114,6 +115,26 @@ class ApiClient {
     );
   }
 
+  Future<ActorDetails> showActor(
+    int actorId,
+    String locale,
+  ) async {
+    ActorDetails parser(dynamic json, [String? key]) {
+      final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
+      return ActorDetails.fromJson(mapJson);
+    }
+
+    return getRequest<ActorDetails>(
+      _host,
+      '/person/$actorId',
+      parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'language': locale,
+      },
+    );
+  }
+
   Future<MovieDetails> getMovieDetails(
     int movieId,
     String locale,
@@ -130,6 +151,7 @@ class ApiClient {
       <String, dynamic>{
         'api_key': _apiKey,
         'language': locale,
+        'append_to_response': 'credits,videos',
       },
     );
   }

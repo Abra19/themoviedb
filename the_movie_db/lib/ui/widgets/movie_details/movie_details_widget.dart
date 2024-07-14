@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/constants/movies_datas.dart';
+import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
@@ -27,15 +27,9 @@ class _MovieDetailsWidgetState extends State<MovieDetailsWidget> {
       appBar: AppBar(
         title: const _TitleWidget(),
       ),
-      body: ColoredBox(
+      body: const ColoredBox(
         color: AppColors.appMovieInfoColor,
-        child: ListView(
-          // ignore: prefer_const_literals_to_create_immutables
-          children: <Widget>[
-            // MovieInfoWidget(movie: movie),
-            // MovieScreenCast(movie: movie),
-          ],
-        ),
+        child: _MovieBody(),
       ),
     );
   }
@@ -51,7 +45,29 @@ class _TitleWidget extends StatelessWidget {
     if (model == null) {
       return const SizedBox.shrink();
     }
-    return Text(model.movieDetails?.title ?? '',
-        style: AppTextStyle.movieTitleStyle);
+    return Text(
+      model.movieDetails?.title ?? 'Loading ...',
+      style: AppTextStyle.movieTitleStyle,
+    );
+  }
+}
+
+class _MovieBody extends StatelessWidget {
+  const _MovieBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final MovieDetails? movie =
+        NotifyProvider.watch<MovieDetailsModel>(context)?.movieDetails;
+    if (movie == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    return ListView(
+      children: const <Widget>[
+        MovieInfoWidget(),
+        SizedBox(height: 30),
+        MovieScreenCast(),
+      ],
+    );
   }
 }

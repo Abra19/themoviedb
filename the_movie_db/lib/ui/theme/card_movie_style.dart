@@ -9,8 +9,8 @@ abstract class AppMovieCardStyle {
     boxShadow: const <BoxShadow>[
       BoxShadow(
         color: AppColors.appMovieCardShadowColor,
-        blurRadius: 10,
-        offset: Offset(0, 5),
+        blurRadius: 8,
+        offset: Offset(0, 2),
       ),
     ],
   );

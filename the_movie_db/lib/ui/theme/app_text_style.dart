@@ -36,9 +36,15 @@ abstract class AppTextStyle {
     fontWeight: FontWeight.w600,
   );
 
+  static const TextStyle movieNameStyle = TextStyle(
+    color: AppColors.appTextColor,
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+  );
+
   static const TextStyle movieDataStyle = TextStyle(
     color: AppColors.appTextColor,
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: FontWeight.w400,
   );
 
@@ -46,6 +52,12 @@ abstract class AppTextStyle {
     color: AppColors.appBackgroundColor,
     fontSize: 20,
     fontWeight: FontWeight.w700,
+  );
+
+  static const TextStyle castBirthdayStyle = TextStyle(
+    color: AppColors.appBackgroundColor,
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
   );
 
   static const TextStyle castNameStyle = TextStyle(

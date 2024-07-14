@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:the_movie_db/domain/api_client/api_client.dart';
-import 'package:the_movie_db/domain/entities/popular_movie_response.dart';
+import 'package:the_movie_db/domain/entities/movies/popular_movie_response.dart';
 
-import 'package:the_movie_db/domain/entities/movies.dart';
+import 'package:the_movie_db/domain/entities/movies/movies.dart';
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
