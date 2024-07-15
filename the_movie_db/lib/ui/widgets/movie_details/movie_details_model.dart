@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:the_movie_db/domain/api_client/api_client.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
+import 'package:the_movie_db/domain/entities/movie_details/movie_details_video.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
 class MovieDetailsModel extends ChangeNotifier {
@@ -15,6 +16,9 @@ class MovieDetailsModel extends ChangeNotifier {
 
   MovieDetails? _movieDetails;
   MovieDetails? get movieDetails => _movieDetails;
+
+  String? _trailerKey;
+  String? get trailerKey => _trailerKey;
 
   String stringFromDate(DateTime? date) =>
       date != null ? _dateFormat.format(date) : '';
@@ -31,6 +35,7 @@ class MovieDetailsModel extends ChangeNotifier {
 
   Future<void> loadMovieDetails(int movieId) async {
     _movieDetails = await _apiClient.getMovieDetails(movieId, _locale);
+    _trailerKey = getTrailerKey(_movieDetails);
 
     notifyListeners();
   }
@@ -39,6 +44,29 @@ class MovieDetailsModel extends ChangeNotifier {
     Navigator.of(context).pushNamed(
       MainNavigationRouteNames.movieDetailsActor,
       arguments: id,
+    );
+  }
+
+  String? getTrailerKey(MovieDetails? movieDetails) {
+    final List<MovieDetailVideoResult>? results = movieDetails?.videos.results;
+
+    if (results == null) {
+      return null;
+    }
+
+    final List<MovieDetailVideoResult> videos = results
+        .where(
+          (MovieDetailVideoResult video) =>
+              video.type == 'Trailer' && video.site == 'YouTube',
+        )
+        .toList();
+    return videos.isNotEmpty ? videos.first.key : null;
+  }
+
+  void showTrailer(BuildContext context) {
+    Navigator.of(context).pushNamed(
+      MainNavigationRouteNames.movieDetailsTrailer,
+      arguments: _trailerKey,
     );
   }
 }

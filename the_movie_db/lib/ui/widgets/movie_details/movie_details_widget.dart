@@ -18,7 +18,9 @@ class _MovieDetailsWidgetState extends State<MovieDetailsWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    NotifyProvider.read<MovieDetailsModel>(context)?.setupLocale(context);
+    final MovieDetailsModel? model =
+        NotifyProvider.read<MovieDetailsModel>(context);
+    model?.setupLocale(context);
   }
 
   @override

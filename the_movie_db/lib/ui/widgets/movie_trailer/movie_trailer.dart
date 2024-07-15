@@ -19,6 +19,9 @@ class _MovieTrailerState extends State<MovieTrailer> {
     super.initState();
     _controller = YoutubePlayerController(
       initialVideoId: widget.trailerKey,
+      flags: const YoutubePlayerFlags(
+        hideThumbnail: true,
+      ),
     );
   }
 
@@ -34,6 +37,7 @@ class _MovieTrailerState extends State<MovieTrailer> {
       ),
       onEnded: (_) => Navigator.of(context).pop(),
     );
+
     return YoutubePlayerBuilder(
       player: player,
       builder: (BuildContext context, Widget player) {

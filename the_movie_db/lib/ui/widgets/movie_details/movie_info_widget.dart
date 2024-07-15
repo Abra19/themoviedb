@@ -4,9 +4,7 @@ import 'package:the_movie_db/constants/score_widget.dart';
 import 'package:the_movie_db/domain/api_client/api_client.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_credits.dart';
-import 'package:the_movie_db/domain/entities/movie_details/movie_details_video.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
-import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/radial_percent_widget.dart';
@@ -161,28 +159,13 @@ class PlayTrailer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<MovieDetailVideoResult>? results =
-        NotifyProvider.watch<MovieDetailsModel>(context)
-            ?.movieDetails
-            ?.videos
-            .results;
-    if (results == null) {
-      return const SizedBox.shrink();
-    }
+    final MovieDetailsModel? model =
+        NotifyProvider.watch<MovieDetailsModel>(context);
+    final String? trailerKey = model?.trailerKey;
 
-    final List<MovieDetailVideoResult> videos = results
-        .where(
-          (MovieDetailVideoResult video) =>
-              video.type == 'Trailer' && video.site == 'YouTube',
-        )
-        .toList();
-    final String? trailerKey = videos.isNotEmpty ? videos.first.key : null;
-    return trailerKey != null
+    return trailerKey != null && model != null
         ? TextButton(
-            onPressed: () => Navigator.of(context).pushNamed(
-              MainNavigationRouteNames.movieDetailsTrailer,
-              arguments: trailerKey,
-            ),
+            onPressed: () => model.showTrailer(context),
             child: const Row(
               children: <Widget>[
                 Icon(
