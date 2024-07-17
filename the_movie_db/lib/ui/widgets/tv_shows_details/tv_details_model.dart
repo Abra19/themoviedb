@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:the_movie_db/domain/api_client/api_client.dart';
-import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_video.dart';
+import 'package:the_movie_db/domain/entities/show_details/show_details.dart';
 import 'package:the_movie_db/library/dates/date_string_from_date.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
-class MovieDetailsModel extends ChangeNotifier {
-  MovieDetailsModel(this.movieId);
+class TVDetailsModel extends ChangeNotifier {
+  TVDetailsModel(this.showId);
 
   final ApiClient _apiClient = ApiClient();
-  final int movieId;
+  final int showId;
 
   String _locale = '';
   late DateFormat _dateFormat;
 
-  MovieDetails? _movieDetails;
-  MovieDetails? get movieDetails => _movieDetails;
+  ShowDetails? _showDetails;
+  ShowDetails? get showDetails => _showDetails;
 
   String? _trailerKey;
   String? get trailerKey => _trailerKey;
@@ -31,12 +31,12 @@ class MovieDetailsModel extends ChangeNotifier {
     }
     _locale = locale;
     _dateFormat = DateFormat.yMMMMd(_locale);
-    await loadMovieDetails(movieId);
+    await loadShowDetails(showId);
   }
 
-  Future<void> loadMovieDetails(int movieId) async {
-    _movieDetails = await _apiClient.getMovieDetails(movieId, _locale);
-    _trailerKey = getTrailerKey(_movieDetails);
+  Future<void> loadShowDetails(int showId) async {
+    _showDetails = await _apiClient.getShowDetails(showId, _locale);
+    _trailerKey = getTrailerKey(_showDetails);
 
     notifyListeners();
   }
@@ -48,8 +48,8 @@ class MovieDetailsModel extends ChangeNotifier {
     );
   }
 
-  String? getTrailerKey(MovieDetails? movieDetails) {
-    final List<MovieDetailVideoResult>? results = movieDetails?.videos.results;
+  String? getTrailerKey(ShowDetails? showDetails) {
+    final List<MovieDetailVideoResult>? results = showDetails?.videos.results;
 
     if (results == null) {
       return null;

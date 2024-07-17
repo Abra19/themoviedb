@@ -3,18 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:the_movie_db/domain/api_client/api_client.dart';
-import 'package:the_movie_db/domain/entities/movies/popular_movie_response.dart';
-
-import 'package:the_movie_db/domain/entities/movies/movies.dart';
+import 'package:the_movie_db/domain/entities/shows/popular_shows_response.dart';
+import 'package:the_movie_db/domain/entities/shows/shows.dart';
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
 import 'package:the_movie_db/library/dates/date_string_from_date.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
-class MoviesWidgetModel extends ChangeNotifier {
+class TVShowsModel extends ChangeNotifier {
   final ApiClient _apiClient = ApiClient();
 
-  final List<Movie> _movies = <Movie>[];
-  List<Movie> get movies => List<Movie>.unmodifiable(_movies);
+  final List<TVShow> _shows = <TVShow>[];
+  List<TVShow> get shows => List<TVShow>.unmodifiable(_shows);
 
   String _locale = 'ru';
   late DateFormat _dateFormat;
@@ -33,26 +32,26 @@ class MoviesWidgetModel extends ChangeNotifier {
   String stringFromDate(DateTime? date) =>
       dateStringFromDate(_dateFormat, date);
 
-  Future<PopularMovieResponse> _loadMovies(int page, String locale) async {
+  Future<PopularTVShowsResponse> _loadShows(int page, String locale) async {
     final String? query = _searchQuery;
     if (query == null) {
-      return _apiClient.popularMovie(page, _locale);
+      return _apiClient.popularShows(page, _locale);
     }
-    return _apiClient.searchMovie(page, locale, query);
+    return _apiClient.searchTV(page, locale, query);
   }
 
-  Future<void> _loadMoviesNextPage() async {
+  Future<void> _loadShowsNextPage() async {
     if (_currentPage >= _totalPages || _isLoadingInProgress) {
       return;
     }
     _isLoadingInProgress = true;
     final int nextPage = _currentPage + 1;
     try {
-      final PopularMovieResponse response =
-          await _loadMovies(nextPage, _locale);
+      final PopularTVShowsResponse response =
+          await _loadShows(nextPage, _locale);
       _currentPage = response.page;
       _totalPages = response.totalPages;
-      _movies.addAll(response.movies! as Iterable<Movie>);
+      _shows.addAll(response.shows! as Iterable<TVShow>);
     } on ApiClientException catch (error) {
       switch (error.type) {
         case ApiClientExceptionType.network:
@@ -68,18 +67,18 @@ class MoviesWidgetModel extends ChangeNotifier {
     }
   }
 
-  void showMovieAtIndex(int index) {
-    if (index < _movies.length - 1) {
+  void showAtIndex(int index) {
+    if (index < _shows.length - 1) {
       return;
     }
-    _loadMoviesNextPage();
+    _loadShowsNextPage();
   }
 
   Future<void> _resetList() async {
     _currentPage = 0;
     _totalPages = 1;
-    _movies.clear();
-    await _loadMoviesNextPage();
+    _shows.clear();
+    await _loadShowsNextPage();
   }
 
   Future<void> setupLocale(BuildContext context) async {
@@ -99,15 +98,15 @@ class MoviesWidgetModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onMovieClick(BuildContext context, int index) {
-    final int id = _movies[index].id;
+  void onShowClick(BuildContext context, int index) {
+    final int id = _shows[index].id;
     Navigator.of(context).pushNamed(
-      MainNavigationRouteNames.movieDetails,
+      MainNavigationRouteNames.tvDetails,
       arguments: id,
     );
   }
 
-  Future<void> searchMovies(String query) async {
+  Future<void> searchShows(String query) async {
     searchDebounce?.cancel();
     searchDebounce = Timer(const Duration(milliseconds: 250), () async {
       final String? searchQuery = query.isNotEmpty ? query : null;

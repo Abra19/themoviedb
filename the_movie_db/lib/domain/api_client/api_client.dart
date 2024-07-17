@@ -3,6 +3,8 @@ import 'package:the_movie_db/domain/api_client/request_templates.dart';
 import 'package:the_movie_db/domain/entities/actors/actor_details.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/domain/entities/movies/popular_movie_response.dart';
+import 'package:the_movie_db/domain/entities/show_details/show_details.dart';
+import 'package:the_movie_db/domain/entities/shows/popular_shows_response.dart';
 
 class ApiClient {
   static const String _host = 'https://api.themoviedb.org/3';
@@ -147,6 +149,69 @@ class ApiClient {
     return getRequest<MovieDetails>(
       _host,
       '/movie/$movieId',
+      parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'language': locale,
+        'append_to_response': 'credits,videos',
+      },
+    );
+  }
+
+  Future<PopularTVShowsResponse> popularShows(int page, String locale) async {
+    PopularTVShowsResponse parser(dynamic json, [String? key]) {
+      final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
+      return PopularTVShowsResponse.fromJson(mapJson);
+    }
+
+    return getRequest<PopularTVShowsResponse>(
+      _host,
+      '/tv/popular',
+      parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'language': locale,
+        'page': page.toString(),
+      },
+    );
+  }
+
+  Future<PopularTVShowsResponse> searchTV(
+    int page,
+    String locale,
+    String query,
+  ) async {
+    PopularTVShowsResponse parser(dynamic json, [String? key]) {
+      final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
+      return PopularTVShowsResponse.fromJson(mapJson);
+    }
+
+    return getRequest<PopularTVShowsResponse>(
+      _host,
+      '/search/tv',
+      parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'language': locale,
+        'page': page.toString(),
+        'include_adult': 'true',
+        'query': query,
+      },
+    );
+  }
+
+  Future<ShowDetails> getShowDetails(
+    int showId,
+    String locale,
+  ) async {
+    ShowDetails parser(dynamic json, [String? key]) {
+      final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
+      return ShowDetails.fromJson(mapJson);
+    }
+
+    return getRequest<ShowDetails>(
+      _host,
+      '/tv/$showId',
       parser,
       <String, dynamic>{
         'api_key': _apiKey,

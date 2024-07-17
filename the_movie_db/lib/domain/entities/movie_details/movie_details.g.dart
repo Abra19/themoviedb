@@ -95,18 +95,6 @@ Map<String, dynamic> _$SpokenLanguageToJson(SpokenLanguage instance) =>
       'name': instance.name,
     };
 
-ProductionCountry _$ProductionCountryFromJson(Map<String, dynamic> json) =>
-    ProductionCountry(
-      iso: json['iso_3166_1'] as String,
-      name: json['name'] as String,
-    );
-
-Map<String, dynamic> _$ProductionCountryToJson(ProductionCountry instance) =>
-    <String, dynamic>{
-      'iso_3166_1': instance.iso,
-      'name': instance.name,
-    };
-
 ProductionCompany _$ProductionCompanyFromJson(Map<String, dynamic> json) =>
     ProductionCompany(
       id: (json['id'] as num).toInt(),
@@ -121,16 +109,6 @@ Map<String, dynamic> _$ProductionCompanyToJson(ProductionCompany instance) =>
       'logo_path': instance.logoPath,
       'name': instance.name,
       'origin_country': instance.originCountry,
-    };
-
-Genre _$GenreFromJson(Map<String, dynamic> json) => Genre(
-      id: (json['id'] as num).toInt(),
-      name: json['name'] as String,
-    );
-
-Map<String, dynamic> _$GenreToJson(Genre instance) => <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
     };
 
 BelongsToCollection _$BelongsToCollectionFromJson(Map<String, dynamic> json) =>

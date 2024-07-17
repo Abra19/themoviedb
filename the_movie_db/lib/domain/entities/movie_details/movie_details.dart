@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:the_movie_db/domain/entities/date_parser/movie_date_parser.dart';
+import 'package:the_movie_db/domain/entities/date_parser/date_parser.dart';
+import 'package:the_movie_db/domain/entities/general/genre.dart';
+import 'package:the_movie_db/domain/entities/general/productionCountry.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_credits.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_video.dart';
 
@@ -92,28 +94,6 @@ class SpokenLanguage {
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)
-class ProductionCountry {
-  ProductionCountry({
-    required this.iso,
-    required this.name,
-  });
-
-  factory ProductionCountry.fromJson(Map<String, dynamic> json) =>
-      _$ProductionCountryFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ProductionCountryToJson(this);
-
-  @JsonKey(name: 'iso_3166_1')
-  final String iso;
-  final String name;
-
-  @override
-  String toString() {
-    return iso;
-  }
-}
-
-@JsonSerializable(fieldRename: FieldRename.snake)
 class ProductionCompany {
   ProductionCompany({
     required this.id,
@@ -131,26 +111,6 @@ class ProductionCompany {
   final String? logoPath;
   final String name;
   final String originCountry;
-}
-
-@JsonSerializable(fieldRename: FieldRename.snake)
-class Genre {
-  Genre({
-    required this.id,
-    required this.name,
-  });
-
-  factory Genre.fromJson(Map<String, dynamic> json) => _$GenreFromJson(json);
-
-  Map<String, dynamic> toJson() => _$GenreToJson(this);
-
-  final int id;
-  final String name;
-
-  @override
-  String toString() {
-    return name;
-  }
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake)

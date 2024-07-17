@@ -48,6 +48,13 @@ abstract class AppTextStyle {
     fontWeight: FontWeight.w400,
   );
 
+  static const TextStyle movieTagStyle = TextStyle(
+    color: Color.fromARGB(255, 190, 182, 182),
+    fontSize: 18,
+    fontStyle: FontStyle.italic,
+    fontWeight: FontWeight.w500,
+  );
+
   static const TextStyle castTitleStyle = TextStyle(
     color: AppColors.appBackgroundColor,
     fontSize: 20,
@@ -76,5 +83,11 @@ abstract class AppTextStyle {
     color: AppColors.appBackgroundColor,
     fontSize: 16,
     fontWeight: FontWeight.w400,
+  );
+
+  static const TextStyle finalSeasonStyle = TextStyle(
+    color: AppColors.appErrorColor,
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
   );
 }

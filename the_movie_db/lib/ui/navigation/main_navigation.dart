@@ -9,11 +9,14 @@ import 'package:the_movie_db/ui/widgets/main_screen/main_screen_widget.dart';
 import 'package:the_movie_db/ui/widgets/movie_details/movie_details_model.dart';
 import 'package:the_movie_db/ui/widgets/movie_details/movie_details_widget.dart';
 import 'package:the_movie_db/ui/widgets/movie_trailer/movie_trailer.dart';
+import 'package:the_movie_db/ui/widgets/tv_shows_details/tv_details_model.dart';
+import 'package:the_movie_db/ui/widgets/tv_shows_details/tv_details_widget.dart';
 
 class MainNavigationRouteNames {
   static const String root = '/';
   static const String auth = 'auth';
   static const String movieDetails = '/movie_details';
+  static const String tvDetails = '/tv_details';
   static const String movieDetailsActor = '/movie_details/actor';
   static const String movieDetailsTrailer = '/movie_details/trailer';
 }
@@ -59,6 +62,15 @@ class MainNavigation {
         return MaterialPageRoute<Object>(
           builder: (BuildContext context) =>
               MovieTrailer(trailerKey: trailerKey),
+        );
+      case MainNavigationRouteNames.tvDetails:
+        final Object? argument = settings.arguments;
+        final int seriesId = argument is int ? argument : 0;
+        return MaterialPageRoute<Object>(
+          builder: (BuildContext context) => NotifyProvider<TVDetailsModel>(
+            create: () => TVDetailsModel(seriesId),
+            child: const TVDetailsWidget(),
+          ),
         );
       default:
         const Text widget = Text('Navigation error!');

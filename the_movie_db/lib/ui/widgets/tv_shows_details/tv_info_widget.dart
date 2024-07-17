@@ -4,16 +4,16 @@ import 'package:the_movie_db/constants/score_widget.dart';
 import 'package:the_movie_db/domain/api_client/api_client.dart';
 import 'package:the_movie_db/domain/entities/general/genre.dart';
 import 'package:the_movie_db/domain/entities/general/productionCountry.dart';
-import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_credits.dart';
+import 'package:the_movie_db/domain/entities/show_details/show_details.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/radial_percent_widget.dart';
-import 'package:the_movie_db/ui/widgets/movie_details/movie_details_model.dart';
+import 'package:the_movie_db/ui/widgets/tv_shows_details/tv_details_model.dart';
 
-class MovieInfoWidget extends StatelessWidget {
-  const MovieInfoWidget({super.key});
+class ShowInfoWidget extends StatelessWidget {
+  const ShowInfoWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class MovieInfoWidget extends StatelessWidget {
           _TopPosterWidget(),
           Padding(
             padding: EdgeInsets.all(20.0),
-            child: _MovieNameWidget(),
+            child: _ShowNameWidget(),
           ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
@@ -52,10 +52,10 @@ class _TopPosterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetails? movie =
-        NotifyProvider.watch<MovieDetailsModel>(context)?.movieDetails;
-    final String? backdropPath = movie?.backdropPath;
-    final String? posterPath = movie?.posterPath;
+    final ShowDetails? show =
+        NotifyProvider.watch<TVDetailsModel>(context)?.showDetails;
+    final String? backdropPath = show?.backdropPath;
+    final String? posterPath = show?.posterPath;
     return AspectRatio(
       aspectRatio: 16 / 9,
       child: Stack(
@@ -82,17 +82,17 @@ class _TopPosterWidget extends StatelessWidget {
   }
 }
 
-class _MovieNameWidget extends StatelessWidget {
-  const _MovieNameWidget();
+class _ShowNameWidget extends StatelessWidget {
+  const _ShowNameWidget();
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetails? movie =
-        NotifyProvider.watch<MovieDetailsModel>(context)?.movieDetails;
+    final ShowDetails? show =
+        NotifyProvider.watch<TVDetailsModel>(context)?.showDetails;
 
-    final String? movieTitle = movie?.title;
-    String? movieYear = movie?.releaseDate?.year.toString();
-    movieYear = movieYear != 'null' ? ' ($movieYear)' : '';
+    final String? showTitle = show?.name;
+    String? showYear = show?.firstAirDate?.year.toString();
+    showYear = showYear != 'null' ? ' ($showYear)' : '';
 
     return RichText(
       maxLines: 2,
@@ -100,11 +100,11 @@ class _MovieNameWidget extends StatelessWidget {
       text: TextSpan(
         children: <InlineSpan>[
           TextSpan(
-            text: movieTitle ?? '',
+            text: showTitle ?? '',
             style: AppTextStyle.movieTitleStyle,
           ),
           TextSpan(
-            text: movieYear,
+            text: showYear,
             style: AppTextStyle.movieDataStyle,
           ),
         ],
@@ -118,9 +118,9 @@ class _ScoreWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetails? movie =
-        NotifyProvider.watch<MovieDetailsModel>(context)?.movieDetails;
-    final double? voteAverage = movie?.voteAverage;
+    final ShowDetails? show =
+        NotifyProvider.watch<TVDetailsModel>(context)?.showDetails;
+    final double? voteAverage = show?.voteAverage;
     final double percent = voteAverage != null ? voteAverage * 10 : 0.0;
 
     return Row(
@@ -149,7 +149,6 @@ class _ScoreWidget extends StatelessWidget {
             ],
           ),
         ),
-        Container(width: 1, height: 15, color: AppColors.appInputBorderColor),
         const PlayTrailer(),
       ],
     );
@@ -161,26 +160,34 @@ class PlayTrailer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetailsModel? model =
-        NotifyProvider.watch<MovieDetailsModel>(context);
+    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
     final String? trailerKey = model?.trailerKey;
 
     return trailerKey != null && model != null
-        ? TextButton(
-            onPressed: () => model.showTrailer(context),
-            child: const Row(
-              children: <Widget>[
-                Icon(
-                  Icons.play_arrow,
-                  color: AppColors.appTextColor,
+        ? Row(
+            children: <Widget>[
+              Container(
+                width: 1,
+                height: 15,
+                color: AppColors.appInputBorderColor,
+              ),
+              TextButton(
+                onPressed: () => model.showTrailer(context),
+                child: const Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.play_arrow,
+                      color: AppColors.appTextColor,
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      'Play Trailer',
+                      style: AppTextStyle.movieDataStyle,
+                    ),
+                  ],
                 ),
-                SizedBox(width: 5),
-                Text(
-                  'Play Trailer',
-                  style: AppTextStyle.movieDataStyle,
-                ),
-              ],
-            ),
+              ),
+            ],
           )
         : const SizedBox.shrink();
   }
@@ -191,28 +198,27 @@ class _SummaryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetailsModel? model =
-        NotifyProvider.watch<MovieDetailsModel>(context);
+    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
     if (model == null) {
       return const SizedBox.shrink();
     }
     String date = '';
-    final DateTime? releaseDate = model.movieDetails?.releaseDate;
+    final DateTime? releaseDate = model.showDetails?.firstAirDate;
     if (releaseDate != null) {
       date = model.stringFromDate(releaseDate);
     }
 
     final List<ProductionCountry>? listCountries =
-        model.movieDetails?.productionCountries;
+        model.showDetails?.productionCountries;
 
     final String countries = listCountries == null || listCountries.isEmpty
         ? ''
         : '(${listCountries.join(', ')})';
 
-    final int minutes = model.movieDetails?.runtime ?? 0;
-    final String duration = '${minutes ~/ 60}h${minutes % 60}m';
+    final int seasons = model.showDetails?.numberOfSeasons ?? 0;
+    final int episodes = model.showDetails?.numberOfEpisodes ?? 0;
 
-    final List<Genre>? listGenres = model.movieDetails?.genres;
+    final List<Genre>? listGenres = model.showDetails?.genres;
     final String genres = listGenres == null || listGenres.isEmpty
         ? ''
         : listGenres
@@ -224,16 +230,38 @@ class _SummaryWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              '® $date $countries',
+              '® $date',
               style: AppTextStyle.movieDataStyle,
             ),
             const Padding(
               padding: EdgeInsets.only(left: 10.0, right: 10.0),
               child: Icon(Icons.star, color: AppColors.appTextColor, size: 10),
             ),
-            Text(duration, style: AppTextStyle.movieDataStyle),
+            Text(
+              countries,
+              style: AppTextStyle.movieDataStyle,
+            ),
           ],
         ),
+        const SizedBox(height: 5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              seasons != 0 ? '$seasons seasons' : '',
+              style: AppTextStyle.movieDataStyle,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 10.0, right: 10.0),
+              child: Icon(Icons.star, color: AppColors.appTextColor, size: 10),
+            ),
+            Text(
+              episodes != 0 ? '$episodes episodes' : '',
+              style: AppTextStyle.movieDataStyle,
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -260,15 +288,24 @@ class _OverviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetails? movie =
-        NotifyProvider.watch<MovieDetailsModel>(context)?.movieDetails;
-    if (movie == null) {
+    final ShowDetails? show =
+        NotifyProvider.watch<TVDetailsModel>(context)?.showDetails;
+    if (show == null) {
       return const SizedBox.shrink();
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        if (movie.overview != null && movie.overview!.isNotEmpty)
+        if (show.tagline != null && show.tagline!.isNotEmpty)
+          Column(
+            children: <Widget>[
+              Text(show.tagline!, style: AppTextStyle.movieTagStyle),
+              const SizedBox(height: 10),
+            ],
+          )
+        else
+          const SizedBox.shrink(),
+        if (show.overview != null && show.overview!.isNotEmpty)
           const Column(
             children: <Widget>[
               Text('Overview', style: AppTextStyle.movieTitleStyle),
@@ -278,7 +315,7 @@ class _OverviewWidget extends StatelessWidget {
         else
           const SizedBox.shrink(),
         Text(
-          movie.overview ?? '',
+          show.overview ?? '',
           style: AppTextStyle.movieDataStyle,
         ),
       ],
@@ -292,13 +329,14 @@ class _MovieCrewWidgets extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MovieDetailsCredits? credits =
-        NotifyProvider.watch<MovieDetailsModel>(context)?.movieDetails?.credits;
+        NotifyProvider.watch<TVDetailsModel>(context)?.showDetails?.credits;
+
     if (credits == null || credits.crew.isEmpty) {
       return const SizedBox.shrink();
     }
 
     final List<CrewData> basicCrew = credits.crew
-        .where((Crew el) => specialtyMovies.contains(el.job))
+        .where((Crew el) => specialtySeries.contains(el.job))
         .map((Crew el) => CrewData(name: el.name, job: el.job))
         .fold(<String, List<String>>{},
             (Map<String, List<String>> acc, CrewData el) {

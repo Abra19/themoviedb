@@ -4,6 +4,8 @@ import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget.dart';
 import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget_model.dart';
+import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_model.dart';
+import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_widget.dart';
 
 class MainScreenWidget extends StatefulWidget {
   const MainScreenWidget({super.key});
@@ -15,6 +17,7 @@ class MainScreenWidget extends StatefulWidget {
 class _MainScreenWidgetState extends State<MainScreenWidget> {
   int _selectedIndex = 0;
   final MoviesWidgetModel moviesModel = MoviesWidgetModel();
+  final TVShowsModel showsModel = TVShowsModel();
 
   void onSelectIndex(int index) {
     if (_selectedIndex == index) {
@@ -29,6 +32,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     moviesModel.setupLocale(context);
+    showsModel.setupLocale(context);
   }
 
   @override
@@ -60,10 +64,12 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
           const Text('Index 0: News'),
           NotifyProvider<MoviesWidgetModel>(
             create: () => moviesModel,
-            isManagedModel: false,
             child: const MoviesWidget(),
           ),
-          const Text('Index 2: TV Shows'),
+          NotifyProvider<TVShowsModel>(
+            create: () => showsModel,
+            child: const TVShowsWidget(),
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

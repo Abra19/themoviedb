@@ -5,16 +5,15 @@ import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/theme/card_movie_style.dart';
-import 'package:the_movie_db/ui/widgets/movie_details/movie_details_model.dart';
+import 'package:the_movie_db/ui/widgets/tv_shows_details/tv_details_model.dart';
 
-class MovieScreenCast extends StatelessWidget {
-  const MovieScreenCast({super.key});
+class TVScreenCast extends StatelessWidget {
+  const TVScreenCast({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetailsModel? model =
-        NotifyProvider.watch<MovieDetailsModel>(context);
-    final MovieDetailsCredits? credits = model?.movieDetails?.credits;
+    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
+    final MovieDetailsCredits? credits = model?.showDetails?.credits;
     if (credits == null || credits.cast.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -45,9 +44,8 @@ class _ActorsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetailsModel? model =
-        NotifyProvider.watch<MovieDetailsModel>(context);
-    final MovieDetailsCredits? credits = model?.movieDetails?.credits;
+    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
+    final MovieDetailsCredits? credits = model?.showDetails?.credits;
     if (credits == null || credits.cast.isEmpty) {
       return const SizedBox.shrink();
     }
