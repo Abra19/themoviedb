@@ -8,8 +8,8 @@ class PopularMovieResponse {
   PopularMovieResponse({
     this.page = 0,
     required this.movies,
-    required this.totalPages,
-    required this.totalResults,
+    this.totalPages = 0,
+    this.totalResults = 0,
   });
 
   factory PopularMovieResponse.fromJson(Map<String, dynamic> json) =>

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:the_movie_db/domain/data_providers/session_data_provider.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
+import 'package:the_movie_db/ui/widgets/favorites/favorite_widget.dart';
 import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget.dart';
 import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget_model.dart';
+import 'package:the_movie_db/ui/widgets/news_screen/news_screen_model.dart';
+import 'package:the_movie_db/ui/widgets/news_screen/news_screen_widget.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_model.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_widget.dart';
 
@@ -18,8 +21,10 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
   int _selectedIndex = 0;
   final MoviesWidgetModel moviesModel = MoviesWidgetModel();
   final TVShowsModel showsModel = TVShowsModel();
+  final NewsScreenModel newsModel = NewsScreenModel();
 
   void onSelectIndex(int index) {
+    moviesModel.resetList;
     if (_selectedIndex == index) {
       return;
     }
@@ -33,6 +38,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
     super.didChangeDependencies();
     moviesModel.setupLocale(context);
     showsModel.setupLocale(context);
+    newsModel.setupLocale(context);
   }
 
   @override
@@ -61,7 +67,10 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       body: IndexedStack(
         index: _selectedIndex,
         children: <Widget>[
-          const Text('Index 0: News'),
+          NotifyProvider<NewsScreenModel>(
+            create: () => newsModel,
+            child: const NewsScreenWidget(),
+          ),
           NotifyProvider<MoviesWidgetModel>(
             create: () => moviesModel,
             child: const MoviesWidget(),
@@ -69,6 +78,10 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
           NotifyProvider<TVShowsModel>(
             create: () => showsModel,
             child: const TVShowsWidget(),
+          ),
+          NotifyProvider<MoviesWidgetModel>(
+            create: () => moviesModel,
+            child: const FavoriteWidget(),
           ),
         ],
       ),
@@ -88,6 +101,10 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
           BottomNavigationBarItem(
             icon: Icon(Icons.tv),
             label: 'TV Shows',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Favorites',
           ),
         ],
       ),

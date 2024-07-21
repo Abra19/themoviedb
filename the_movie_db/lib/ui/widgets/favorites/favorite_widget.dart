@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:the_movie_db/domain/api_client/api_client.dart';
-import 'package:the_movie_db/domain/entities/shows/shows.dart';
+import 'package:the_movie_db/domain/entities/movies/movies.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/theme/card_movie_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/errors_widget.dart';
-import 'package:the_movie_db/ui/widgets/tv_shows_screen/click_show_widget.dart';
-import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_model.dart';
+import 'package:the_movie_db/ui/widgets/favorites/click_favorite_widget.dart';
+import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget_model.dart';
 
-class TVShowsWidget extends StatelessWidget {
-  const TVShowsWidget({super.key});
+class FavoriteWidget extends StatefulWidget {
+  const FavoriteWidget({super.key});
 
   @override
+  State<FavoriteWidget> createState() => _FavoriteWidgetState();
+}
+
+class _FavoriteWidgetState extends State<FavoriteWidget> {
+  @override
   Widget build(BuildContext context) {
-    final TVShowsModel? model = NotifyProvider.watch<TVShowsModel>(context);
+    final MoviesWidgetModel? model =
+        NotifyProvider.watch<MoviesWidgetModel>(context);
     if (model == null) {
       return const SizedBox.shrink();
     }
@@ -22,14 +28,15 @@ class TVShowsWidget extends StatelessWidget {
       children: <Widget>[
         ErrorsWidget(message: message),
         ListView.builder(
-          padding: const EdgeInsets.only(top: 76),
+          padding: const EdgeInsets.only(top: 10),
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          itemCount: model.shows.length,
+          itemCount: model.favorites.length,
           itemExtent: 163,
           itemBuilder: (BuildContext context, int index) {
-            final TVShow show = model.shows[index];
-            final String? posterPath = show.posterPath;
-            model.showAtIndex(index);
+            final Movie movie = model.favorites[index];
+            final String? posterPath = movie.posterPath;
+            model.showFavoriteAtIndex(index);
+            final String? title = movie.title ?? movie.name;
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -53,22 +60,25 @@ class TVShowsWidget extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               const SizedBox(height: 10),
-                              Text(
-                                show.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppTextStyle.boldBasicTextStyle,
-                              ),
+                              if (title != null)
+                                Text(
+                                  title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyle.boldBasicTextStyle,
+                                )
+                              else
+                                const SizedBox.shrink(),
                               const SizedBox(height: 5),
                               Text(
-                                model.stringFromDate(show.firstAirDate),
+                                model.stringFromDate(movie.releaseDate),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: AppTextStyle.movieDataTextStyle,
                               ),
                               const SizedBox(height: 20),
                               Text(
-                                show.overview,
+                                movie.overview,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -79,18 +89,14 @@ class TVShowsWidget extends StatelessWidget {
                       ],
                     ),
                   ),
-                  ClickShowWidget(index: index),
+                  ClickFavoriteWidget(
+                    index: movie.id,
+                    type: movie.mediaType!,
+                  ),
                 ],
               ),
             );
           },
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: TextField(
-            decoration: AppMovieCardStyle.findFieldDecoration,
-            onChanged: model.searchShows,
-          ),
         ),
       ],
     );

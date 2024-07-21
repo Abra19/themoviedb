@@ -24,9 +24,14 @@ abstract class AppTextStyle {
     color: AppColors.appInputBorderColor,
   );
 
+  static const TextStyle movieDataNewsTextStyle = TextStyle(
+    fontSize: 12,
+    color: AppColors.appInputBorderColor,
+  );
+
   static const TextStyle likesPercentageTextStyle = TextStyle(
     color: AppColors.appTextColor,
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: FontWeight.w400,
   );
 
@@ -79,6 +84,12 @@ abstract class AppTextStyle {
     fontWeight: FontWeight.w400,
   );
 
+  static const TextStyle newsMoviesTitleStyle = TextStyle(
+    color: AppColors.appBackgroundColor,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+  );
+
   static const TextStyle castFullDescriptionStyle = TextStyle(
     color: AppColors.appBackgroundColor,
     fontSize: 16,
@@ -87,6 +98,12 @@ abstract class AppTextStyle {
 
   static const TextStyle finalSeasonStyle = TextStyle(
     color: AppColors.appErrorColor,
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const TextStyle newsTitleStyle = TextStyle(
+    color: AppColors.appBackgroundColor,
     fontSize: 20,
     fontWeight: FontWeight.w600,
   );

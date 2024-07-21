@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:the_movie_db/constants/media_type_enum.dart';
 import 'package:the_movie_db/domain/api_client/api_client.dart';
+import 'package:the_movie_db/domain/data_providers/session_data_provider.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_video.dart';
 import 'package:the_movie_db/library/dates/date_string_from_date.dart';
@@ -9,6 +11,7 @@ import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 class MovieDetailsModel extends ChangeNotifier {
   MovieDetailsModel(this.movieId);
 
+  final SessionDataProvider sessionProvider = SessionDataProvider();
   final ApiClient _apiClient = ApiClient();
   final int movieId;
 
@@ -17,6 +20,9 @@ class MovieDetailsModel extends ChangeNotifier {
 
   MovieDetails? _movieDetails;
   MovieDetails? get movieDetails => _movieDetails;
+
+  bool _isFavorite = false;
+  bool get isFavorite => _isFavorite;
 
   String? _trailerKey;
   String? get trailerKey => _trailerKey;
@@ -37,6 +43,11 @@ class MovieDetailsModel extends ChangeNotifier {
   Future<void> loadMovieDetails(int movieId) async {
     _movieDetails = await _apiClient.getMovieDetails(movieId, _locale);
     _trailerKey = getTrailerKey(_movieDetails);
+    final String? token = await sessionProvider.getSessionId();
+    if (token != null) {
+      final String result = await _apiClient.isMovieInFavorites(movieId, token);
+      _isFavorite = result == 'true';
+    }
 
     notifyListeners();
   }
@@ -69,5 +80,23 @@ class MovieDetailsModel extends ChangeNotifier {
       MainNavigationRouteNames.movieDetailsTrailer,
       arguments: _trailerKey,
     );
+  }
+
+  Future<void> onFavoriteClick(BuildContext context) async {
+    final String? token = await sessionProvider.getSessionId();
+    if (token == null) {
+      return;
+    }
+
+    await _apiClient.postInFavorites(
+      mediaType: MediaType.movie,
+      mediaId: movieId,
+      isFavorite: !_isFavorite,
+      token: token,
+    );
+
+    _isFavorite = !_isFavorite;
+
+    notifyListeners();
   }
 }

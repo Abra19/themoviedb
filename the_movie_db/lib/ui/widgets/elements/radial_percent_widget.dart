@@ -121,8 +121,9 @@ class PercentLabelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String text = percent != 0 ? '${percent.toInt()}%' : 'NR';
     return Text(
-      '${percent.toInt()}',
+      text,
       style: AppTextStyle.likesPercentageTextStyle,
     );
   }

@@ -13,8 +13,8 @@ PopularMovieResponse _$PopularMovieResponseFromJson(
       movies: (json['results'] as List<dynamic>?)
           ?.map((e) => Movie.fromJson(e as Map<String, dynamic>))
           .toList(),
-      totalPages: (json['total_pages'] as num).toInt(),
-      totalResults: (json['total_results'] as num).toInt(),
+      totalPages: (json['total_pages'] as num?)?.toInt() ?? 0,
+      totalResults: (json['total_results'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$PopularMovieResponseToJson(

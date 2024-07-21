@@ -3,7 +3,7 @@ import 'package:the_movie_db/constants/movies_datas.dart';
 import 'package:the_movie_db/constants/score_widget.dart';
 import 'package:the_movie_db/domain/api_client/api_client.dart';
 import 'package:the_movie_db/domain/entities/general/genre.dart';
-import 'package:the_movie_db/domain/entities/general/productionCountry.dart';
+import 'package:the_movie_db/domain/entities/general/production_country.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_credits.dart';
 import 'package:the_movie_db/domain/entities/show_details/show_details.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
@@ -52,8 +52,11 @@ class _TopPosterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ShowDetails? show =
-        NotifyProvider.watch<TVDetailsModel>(context)?.showDetails;
+    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
+    if (model == null) {
+      return const SizedBox.shrink();
+    }
+    final ShowDetails? show = model.showDetails;
     final String? backdropPath = show?.backdropPath;
     final String? posterPath = show?.posterPath;
     return AspectRatio(
@@ -75,6 +78,18 @@ class _TopPosterWidget extends StatelessWidget {
                     height: 160,
                   )
                 : const SizedBox.shrink(),
+          ),
+          Positioned(
+            top: 5,
+            right: 5,
+            child: IconButton(
+              onPressed: () => model.onFavoriteClick(context),
+              icon: Icon(
+                model.isFavorite ? Icons.favorite : Icons.favorite_outline,
+              ),
+              iconSize: 40,
+              color: AppColors.appButtonsColor,
+            ),
           ),
         ],
       ),

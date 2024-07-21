@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:the_movie_db/constants/media_type_enum.dart';
 import 'package:the_movie_db/domain/api_client/request_templates.dart';
 import 'package:the_movie_db/domain/entities/actors/actor_details.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
@@ -10,12 +11,20 @@ class ApiClient {
   static const String _host = 'https://api.themoviedb.org/3';
   static const String _imageUrl = 'https://image.tmdb.org/t/p/w500';
   static final String? _apiKey = dotenv.env['API_KEY'];
+  static final String? _accountId = dotenv.env['ACCOUNT_ID'];
 
   static String imageUrl(String path) => '$_imageUrl$path';
 
   String _parser(dynamic json, [String? key]) {
     final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
-    return mapJson[key] as String;
+    final dynamic value = mapJson[key] ?? '';
+    if (value is String) {
+      return value;
+    } else if (value is bool) {
+      return value.toString();
+    } else {
+      throw Exception('Unsupported type for key $key');
+    }
   }
 
   Future<String> _getToken() async {
@@ -217,6 +226,212 @@ class ApiClient {
         'api_key': _apiKey,
         'language': locale,
         'append_to_response': 'credits,videos',
+      },
+    );
+  }
+
+  Future<PopularMovieResponse> getAllInTrend(
+    String trendPeriod,
+    String locale,
+  ) async {
+    PopularMovieResponse parser(dynamic json, [String? key]) {
+      final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
+      return PopularMovieResponse.fromJson(mapJson);
+    }
+
+    return getRequest<PopularMovieResponse>(
+      _host,
+      '/trending/all/$trendPeriod',
+      parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'language': locale,
+      },
+    );
+  }
+
+  Future<PopularMovieResponse> getNewMovies(
+    String regionValue,
+    String locale,
+  ) async {
+    PopularMovieResponse parser(dynamic json, [String? key]) {
+      final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
+      return PopularMovieResponse.fromJson(mapJson);
+    }
+
+    return getRequest<PopularMovieResponse>(
+      _host,
+      '/movie/upcoming',
+      parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'language': locale,
+        'region': regionValue,
+      },
+    );
+  }
+
+  Future<PopularMovieResponse> getNewShows(
+    String regionValue,
+    String locale,
+  ) async {
+    PopularMovieResponse parser(dynamic json, [String? key]) {
+      final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
+      return PopularMovieResponse.fromJson(mapJson);
+    }
+
+    return getRequest<PopularMovieResponse>(
+      _host,
+      '/tv/on_the_air',
+      parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'language': locale,
+        'timezone': regionValue,
+      },
+    );
+  }
+
+  Future<PopularMovieResponse> getPlayingMovies(
+    String regionValue,
+    String locale,
+  ) async {
+    PopularMovieResponse parser(dynamic json, [String? key]) {
+      final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
+      return PopularMovieResponse.fromJson(mapJson);
+    }
+
+    return getRequest<PopularMovieResponse>(
+      _host,
+      '/movie/now_playing',
+      parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'language': locale,
+        'region': regionValue,
+      },
+    );
+  }
+
+  Future<PopularMovieResponse> getPlayingShows(
+    String regionValue,
+    String locale,
+  ) async {
+    PopularMovieResponse parser(dynamic json, [String? key]) {
+      final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
+      return PopularMovieResponse.fromJson(mapJson);
+    }
+
+    return getRequest<PopularMovieResponse>(
+      _host,
+      '/tv/airing_today',
+      parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'language': locale,
+        'timezone': regionValue,
+      },
+    );
+  }
+
+  Future<String> isMovieInFavorites(
+    int movieId,
+    String token,
+  ) async {
+    return getRequest(
+      _host,
+      '/movie/$movieId/account_states',
+      _parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'session_id': token,
+      },
+      'favorite',
+    );
+  }
+
+  Future<String> isShowInFavorites(
+    int showId,
+    String token,
+  ) async {
+    return getRequest(
+      _host,
+      '/tv/$showId/account_states',
+      _parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'session_id': token,
+      },
+      'favorite',
+    );
+  }
+
+  Future<String> postInFavorites({
+    required MediaType mediaType,
+    required int mediaId,
+    required bool isFavorite,
+    required String token,
+  }) async {
+    final Map<String, dynamic> params = <String, dynamic>{
+      'media_type': mediaType.asString(),
+      'media_id': mediaId,
+      'favorite': isFavorite,
+    };
+    return postRequest<String>(
+      _host,
+      '/account/$_accountId/favorite',
+      'status_message',
+      params,
+      _parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'session_id': token,
+      },
+    );
+  }
+
+  Future<PopularMovieResponse> getFavoriteMovies(
+    String locale,
+    int page,
+    String token,
+  ) async {
+    PopularMovieResponse parser(dynamic json, [String? key]) {
+      final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
+      return PopularMovieResponse.fromJson(mapJson);
+    }
+
+    return getRequest<PopularMovieResponse>(
+      _host,
+      '/account/$_accountId/favorite/movies',
+      parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'language': locale,
+        'session_id': token,
+        'page': page.toString(),
+      },
+    );
+  }
+
+  Future<PopularMovieResponse> getFavoriteShows(
+    String locale,
+    int page,
+    String token,
+  ) async {
+    PopularMovieResponse parser(dynamic json, [String? key]) {
+      final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
+      return PopularMovieResponse.fromJson(mapJson);
+    }
+
+    return getRequest<PopularMovieResponse>(
+      _host,
+      '/account/$_accountId/favorite/tv',
+      parser,
+      <String, dynamic>{
+        'api_key': _apiKey,
+        'language': locale,
+        'session_id': token,
+        'page': page.toString(),
       },
     );
   }

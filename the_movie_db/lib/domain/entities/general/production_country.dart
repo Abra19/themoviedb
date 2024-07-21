@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'productionCountry.g.dart';
+part 'production_country.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class ProductionCountry {

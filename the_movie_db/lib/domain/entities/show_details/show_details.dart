@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:the_movie_db/domain/entities/date_parser/date_parser.dart';
 import 'package:the_movie_db/domain/entities/general/genre.dart';
-import 'package:the_movie_db/domain/entities/general/productionCountry.dart';
+import 'package:the_movie_db/domain/entities/general/production_country.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_credits.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_video.dart';
 

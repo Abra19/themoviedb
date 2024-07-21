@@ -4,6 +4,7 @@ import 'package:the_movie_db/domain/entities/movies/movies.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/theme/card_movie_style.dart';
+import 'package:the_movie_db/ui/widgets/elements/errors_widget.dart';
 import 'package:the_movie_db/ui/widgets/movie_screen/click_movie_widget.dart';
 import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget_model.dart';
 
@@ -20,23 +21,7 @@ class MoviesWidget extends StatelessWidget {
     final String? message = model.errorMessage;
     return Stack(
       children: <Widget>[
-        if (message != null)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 100, horizontal: 16),
-            child: Column(
-              children: <Widget>[
-                Text(
-                  message,
-                  style: const TextStyle(
-                    color: Colors.red,
-                    fontSize: 17,
-                  ),
-                ),
-              ],
-            ),
-          )
-        else
-          const SizedBox.shrink(),
+        ErrorsWidget(message: message),
         ListView.builder(
           padding: const EdgeInsets.only(top: 76),
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -46,6 +31,7 @@ class MoviesWidget extends StatelessWidget {
             final Movie movie = model.movies[index];
             final String? posterPath = movie.posterPath;
             model.showMovieAtIndex(index);
+            final String? title = movie.title ?? movie.name;
 
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -69,12 +55,15 @@ class MoviesWidget extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               const SizedBox(height: 10),
-                              Text(
-                                movie.title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppTextStyle.boldBasicTextStyle,
-                              ),
+                              if (title != null)
+                                Text(
+                                  title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyle.boldBasicTextStyle,
+                                )
+                              else
+                                const SizedBox.shrink(),
                               const SizedBox(height: 5),
                               Text(
                                 model.stringFromDate(movie.releaseDate),

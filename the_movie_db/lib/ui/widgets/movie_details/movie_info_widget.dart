@@ -3,7 +3,7 @@ import 'package:the_movie_db/constants/movies_datas.dart';
 import 'package:the_movie_db/constants/score_widget.dart';
 import 'package:the_movie_db/domain/api_client/api_client.dart';
 import 'package:the_movie_db/domain/entities/general/genre.dart';
-import 'package:the_movie_db/domain/entities/general/productionCountry.dart';
+import 'package:the_movie_db/domain/entities/general/production_country.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_credits.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
@@ -52,8 +52,12 @@ class _TopPosterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetails? movie =
-        NotifyProvider.watch<MovieDetailsModel>(context)?.movieDetails;
+    final MovieDetailsModel? model =
+        NotifyProvider.watch<MovieDetailsModel>(context);
+    if (model == null) {
+      return const SizedBox.shrink();
+    }
+    final MovieDetails? movie = model.movieDetails;
     final String? backdropPath = movie?.backdropPath;
     final String? posterPath = movie?.posterPath;
     return AspectRatio(
@@ -75,6 +79,18 @@ class _TopPosterWidget extends StatelessWidget {
                     height: 160,
                   )
                 : const SizedBox.shrink(),
+          ),
+          Positioned(
+            top: 5,
+            right: 5,
+            child: IconButton(
+              onPressed: () => model.onFavoriteClick(context),
+              icon: Icon(
+                model.isFavorite ? Icons.favorite : Icons.favorite_outline,
+              ),
+              iconSize: 40,
+              color: AppColors.appButtonsColor,
+            ),
           ),
         ],
       ),
@@ -149,7 +165,6 @@ class _ScoreWidget extends StatelessWidget {
             ],
           ),
         ),
-        Container(width: 1, height: 15, color: AppColors.appInputBorderColor),
         const PlayTrailer(),
       ],
     );
@@ -163,24 +178,36 @@ class PlayTrailer extends StatelessWidget {
   Widget build(BuildContext context) {
     final MovieDetailsModel? model =
         NotifyProvider.watch<MovieDetailsModel>(context);
-    final String? trailerKey = model?.trailerKey;
+    if (model == null) {
+      return const SizedBox.shrink();
+    }
+    final String? trailerKey = model.trailerKey;
 
-    return trailerKey != null && model != null
-        ? TextButton(
-            onPressed: () => model.showTrailer(context),
-            child: const Row(
-              children: <Widget>[
-                Icon(
-                  Icons.play_arrow,
-                  color: AppColors.appTextColor,
+    return trailerKey != null
+        ? Row(
+            children: <Widget>[
+              Container(
+                width: 1,
+                height: 15,
+                color: AppColors.appInputBorderColor,
+              ),
+              TextButton(
+                onPressed: () => model.showTrailer(context),
+                child: const Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.play_arrow,
+                      color: AppColors.appTextColor,
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      'Play Trailer',
+                      style: AppTextStyle.movieDataStyle,
+                    ),
+                  ],
                 ),
-                SizedBox(width: 5),
-                Text(
-                  'Play Trailer',
-                  style: AppTextStyle.movieDataStyle,
-                ),
-              ],
-            ),
+              ),
+            ],
           )
         : const SizedBox.shrink();
   }
@@ -223,15 +250,29 @@ class _SummaryWidget extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              '® $date $countries',
-              style: AppTextStyle.movieDataStyle,
+            Expanded(
+              flex: 2,
+              child: Text(
+                '® $date $countries',
+                style: AppTextStyle.movieDataStyle,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(left: 10.0, right: 10.0),
-              child: Icon(Icons.star, color: AppColors.appTextColor, size: 10),
+            Expanded(
+              child: Row(
+                children: <Widget>[
+                  const Padding(
+                    padding: EdgeInsets.only(left: 10.0, right: 10.0),
+                    child: Icon(
+                      Icons.star,
+                      color: AppColors.appTextColor,
+                      size: 10,
+                    ),
+                  ),
+                  Text(duration, style: AppTextStyle.movieDataStyle),
+                ],
+              ),
             ),
-            Text(duration, style: AppTextStyle.movieDataStyle),
           ],
         ),
         Row(

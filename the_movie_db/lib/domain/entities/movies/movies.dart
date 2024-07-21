@@ -7,19 +7,23 @@ part 'movies.g.dart';
 class Movie {
   Movie({
     required this.posterPath,
-    required this.adult,
+    this.adult = true,
     required this.overview,
-    required this.releaseDate,
+    this.releaseDate,
+    this.firstAirDate,
     required this.genreIds,
-    required this.id,
-    required this.originalTitle,
+    this.id = 0,
+    this.originalTitle,
     required this.originalLanguage,
-    required this.title,
+    this.title,
+    this.name,
+    this.originalName,
     required this.backdropPath,
-    required this.popularity,
-    required this.voteCount,
-    required this.video,
-    required this.voteAverage,
+    this.popularity = 0,
+    this.voteCount = 0,
+    this.video = true,
+    this.voteAverage = 0,
+    this.mediaType,
   });
 
   factory Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);
@@ -32,14 +36,20 @@ class Movie {
   @JsonKey(fromJson: parseDateFromString)
   final DateTime? releaseDate;
 
+  @JsonKey(fromJson: parseDateFromString)
+  final DateTime? firstAirDate;
+
   final List<int> genreIds;
   final int id;
-  final String originalTitle;
-  final String originalLanguage;
-  final String title;
+  final String? originalTitle;
+  final String? originalLanguage;
+  final String? originalName;
+  final String? title;
+  final String? name;
   final String? backdropPath;
   final double popularity;
   final int voteCount;
   final bool video;
   final double voteAverage;
+  String? mediaType;
 }

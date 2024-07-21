@@ -77,13 +77,14 @@ Future<T> postRequest<T>(
 
     final HttpClientResponse response = await request.close();
     final dynamic json = await response.decodeJson();
+
     _validateResponse(response, json);
     return parser(json, key);
   } on SocketException {
     throw ApiClientException(ApiClientExceptionType.network);
   } on ApiClientException {
     rethrow;
-  } catch (_) {
+  } catch (e) {
     throw ApiClientException(ApiClientExceptionType.other);
   }
 }
