@@ -2,6 +2,7 @@ enum ApiClientExceptionType {
   network,
   auth,
   api,
+  sessionExpired,
   other,
 }
 

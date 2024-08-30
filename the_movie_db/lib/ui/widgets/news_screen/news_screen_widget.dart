@@ -73,9 +73,9 @@ class _NewsScreenWidgetState extends State<NewsScreenWidget> {
                       child: ToggleButtonCustom(
                         model: model,
                         options: regionOptions,
-                        isSelected: model.isSelectedRegion,
+                        isSelected: model.isSelectedRegionComing,
                         tapFunction: (int index) =>
-                            model.toggleSelectedRegion(index),
+                            model.toggleSelectedRegion(index, 'Coming'),
                       ),
                     ),
                   ],
@@ -104,9 +104,9 @@ class _NewsScreenWidgetState extends State<NewsScreenWidget> {
                       child: ToggleButtonCustom(
                         model: model,
                         options: regionOptions,
-                        isSelected: model.isSelectedRegion,
+                        isSelected: model.isSelectedRegionPlaying,
                         tapFunction: (int index) =>
-                            model.toggleSelectedRegion(index),
+                            model.toggleSelectedRegion(index, 'Playing'),
                       ),
                     ),
                   ],

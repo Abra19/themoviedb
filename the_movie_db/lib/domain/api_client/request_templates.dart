@@ -32,6 +32,10 @@ void _validateResponse(HttpClientResponse response, dynamic json) {
         throw ApiClientException(ApiClientExceptionType.auth);
       case apiError:
         throw ApiClientException(ApiClientExceptionType.api);
+      case sessionExpired:
+        throw ApiClientException(ApiClientExceptionType.sessionExpired);
+      default:
+        throw ApiClientException(ApiClientExceptionType.other);
     }
   }
 }

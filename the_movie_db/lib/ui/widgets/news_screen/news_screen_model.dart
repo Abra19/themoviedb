@@ -9,7 +9,8 @@ import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 class NewsScreenModel extends ChangeNotifier {
   NewsScreenModel() {
     trendPeriod = periodValues[0];
-    regionValue = regionsValues[0];
+    regionValueComing = regionsValuesComing[0];
+    regionValuePlaying = regionsValuesPlaying[0];
   }
   final List<String> periodOptions = <String>['Today', 'Last week'];
   final List<String> periodValues = <String>['day', 'week'];
@@ -18,18 +19,25 @@ class NewsScreenModel extends ChangeNotifier {
     'Europe',
     'USA',
   ];
-  final List<String> regionsValues = <String>[
+  final List<String> regionsValuesComing = <String>[
+    'RU',
+    'FR',
+    'US',
+  ];
+  final List<String> regionsValuesPlaying = <String>[
     'RU',
     'FR',
     'US',
   ];
   late String trendPeriod;
-  late String regionValue;
+  late String regionValueComing;
+  late String regionValuePlaying;
 
   final ApiClient _apiClient = ApiClient();
 
   List<bool> isSelectedDay = <bool>[true, false];
-  List<bool> isSelectedRegion = <bool>[true, false, false];
+  List<bool> isSelectedRegionComing = <bool>[true, false, false];
+  List<bool> isSelectedRegionPlaying = <bool>[true, false, false];
 
   final List<Movie> _trendedMovies = <Movie>[];
   List<Movie> get trendedMovies => List<Movie>.unmodifiable(_trendedMovies);
@@ -64,13 +72,23 @@ class NewsScreenModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleSelectedRegion(int index) async {
-    isSelectedRegion = isSelectedRegion
+  List<bool> changeSelector(List<bool> current, int index) {
+    return current
         .asMap()
         .entries
         .map((MapEntry<int, bool> el) => el.key == index)
         .toList();
-    regionValue = regionsValues[index];
+  }
+
+  Future<void> toggleSelectedRegion(int index, String selectedName) async {
+    if (selectedName == 'Coming') {
+      isSelectedRegionComing = changeSelector(isSelectedRegionComing, index);
+      regionValueComing = regionsValuesComing[index];
+    } else {
+      isSelectedRegionPlaying = changeSelector(isSelectedRegionPlaying, index);
+      regionValuePlaying = regionsValuesPlaying[index];
+    }
+
     await _resetList();
 
     notifyListeners();
@@ -114,33 +132,34 @@ class NewsScreenModel extends ChangeNotifier {
   Future<void> _resetList() async {
     _trendedMovies.clear();
     _newMovies.clear();
+    _playingMovies.clear();
     final PopularMovieResponse trendedResponse =
         await _loadTrendingMovies(trendPeriod, _locale);
     _trendedMovies.addAll(trendedResponse.movies! as Iterable<Movie>);
 
     final PopularMovieResponse newMoviesResponse =
-        await _loadNewMovies(regionValue, _locale);
+        await _loadNewMovies(regionValueComing, _locale);
     for (final Movie movie in newMoviesResponse.movies!) {
       movie.mediaType = movie.mediaType ?? (movie.mediaType = 'movie');
     }
     _newMovies.addAll(newMoviesResponse.movies! as Iterable<Movie>);
 
     final PopularMovieResponse newShowsResponse =
-        await _loadNewShows(regionValue, _locale);
+        await _loadNewShows(regionValueComing, _locale);
     for (final Movie movie in newShowsResponse.movies!) {
       movie.mediaType = movie.mediaType ?? (movie.mediaType = 'tv');
     }
     _newMovies.addAll(newShowsResponse.movies! as Iterable<Movie>);
 
     final PopularMovieResponse playingMoviesResponse =
-        await _loadPlayingMovies(regionValue, _locale);
+        await _loadPlayingMovies(regionValuePlaying, _locale);
     for (final Movie movie in playingMoviesResponse.movies!) {
       movie.mediaType = movie.mediaType ?? (movie.mediaType = 'movie');
     }
     _playingMovies.addAll(playingMoviesResponse.movies! as Iterable<Movie>);
 
     final PopularMovieResponse playingShowsResponse =
-        await _loadPlayingShows(regionValue, _locale);
+        await _loadPlayingShows(regionValuePlaying, _locale);
     for (final Movie movie in playingShowsResponse.movies!) {
       movie.mediaType = movie.mediaType ?? (movie.mediaType = 'tv');
     }

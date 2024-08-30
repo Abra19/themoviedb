@@ -48,13 +48,13 @@ class _NotifyProviderState<Model extends ChangeNotifier>
     );
   }
 
-  @override
-  void dispose() {
-    if (widget.isManagedModel) {
-      _model.dispose();
-    }
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   if (widget.isManagedModel) {
+  //     _model.dispose();
+  //   }
+  //   super.dispose();
+  // }
 }
 
 class _InheritedNotifyProvider<Model extends ChangeNotifier>

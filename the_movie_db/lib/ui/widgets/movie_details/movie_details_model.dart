@@ -5,6 +5,7 @@ import 'package:the_movie_db/domain/api_client/api_client.dart';
 import 'package:the_movie_db/domain/data_providers/session_data_provider.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_video.dart';
+import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
 import 'package:the_movie_db/library/dates/date_string_from_date.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
@@ -26,6 +27,11 @@ class MovieDetailsModel extends ChangeNotifier {
 
   String? _trailerKey;
   String? get trailerKey => _trailerKey;
+
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
+
+  Future<void>? Function()? onSessionExpired;
 
   String stringFromDate(DateTime? date) =>
       dateStringFromDate(_dateFormat, date);
@@ -87,16 +93,25 @@ class MovieDetailsModel extends ChangeNotifier {
     if (token == null) {
       return;
     }
-
-    await _apiClient.postInFavorites(
-      mediaType: MediaType.movie,
-      mediaId: movieId,
-      isFavorite: !_isFavorite,
-      token: token,
-    );
-
-    _isFavorite = !_isFavorite;
-
-    notifyListeners();
+    try {
+      await _apiClient.postInFavorites(
+        mediaType: MediaType.movie,
+        mediaId: movieId,
+        isFavorite: !_isFavorite,
+        token: token,
+      );
+      _isFavorite = !_isFavorite;
+    } on ApiClientException catch (error) {
+      switch (error.type) {
+        case ApiClientExceptionType.sessionExpired:
+          await onSessionExpired?.call();
+        default:
+          _errorMessage = 'Something went wrong, try again later';
+      }
+    } catch (_) {
+      _errorMessage = 'Unexpected error, try again later';
+    } finally {
+      notifyListeners();
+    }
   }
 }

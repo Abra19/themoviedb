@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/domain/data_providers/session_data_provider.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
-import 'package:the_movie_db/ui/navigation/main_navigation.dart';
+import 'package:the_movie_db/library/providers/provider.dart';
 import 'package:the_movie_db/ui/widgets/favorites/favorite_widget.dart';
+import 'package:the_movie_db/ui/widgets/main_app/main_app_model.dart';
 import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget.dart';
 import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget_model.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/news_screen_model.dart';
@@ -43,12 +43,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> onLogout() async {
-      SessionDataProvider().setSessionId(null);
-      await Navigator.of(context)
-          .pushReplacementNamed(MainNavigationRouteNames.auth);
-    }
-
+    final MainAppModel? appModel = Provider.read<MainAppModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('TMDB'),
@@ -59,7 +54,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
             icon: const Icon(Icons.refresh),
           ),
           IconButton(
-            onPressed: onLogout,
+            onPressed: () => appModel?.resetSession(context),
             icon: const Icon(Icons.logout),
           ),
         ],
