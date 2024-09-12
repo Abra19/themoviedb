@@ -14,9 +14,8 @@ class MainAppModel {
 
   Future<void> resetSession(BuildContext context) async {
     _isAuth = false;
-    await Navigator.of(context).pushNamedAndRemoveUntil(
+    await Navigator.of(context).pushReplacementNamed(
       MainNavigationRouteNames.auth,
-      (Route<dynamic> route) => false,
     );
     await sessionDataProvider.setSessionId(null);
   }

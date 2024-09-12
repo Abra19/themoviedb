@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
-import 'package:the_movie_db/library/providers/provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/main_app/main_app_model.dart';
@@ -18,20 +17,19 @@ class MovieDetailsWidget extends StatefulWidget {
 
 class _MovieDetailsWidgetState extends State<MovieDetailsWidget> {
   @override
-  void initState() {
-    super.initState();
-    final MovieDetailsModel? model =
-        NotifyProvider.read<MovieDetailsModel>(context);
-    final MainAppModel? appModel = Provider.read<MainAppModel>(context);
-    model?.onSessionExpired = () => appModel?.resetSession(context);
-  }
+  // void initState() {
+  //   super.initState();
+  // final MovieDetailsViewModel? model =
+  //     NotifyProvider.read<MovieDetailsViewModel>(context);
+  // final MainAppModel? appModel = Provider.read<MainAppModel>(context);
+  // model?.onSessionExpired = () => appModel?.resetSession(context);
+  // }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final MovieDetailsModel? model =
-        NotifyProvider.read<MovieDetailsModel>(context);
-    model?.setupLocale(context);
+    final MovieDetailsViewModel model = context.read<MovieDetailsViewModel>();
+    model.setupLocale(context);
   }
 
   @override
@@ -53,11 +51,8 @@ class _TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetailsModel? model =
-        NotifyProvider.watch<MovieDetailsModel>(context);
-    if (model == null) {
-      return const SizedBox.shrink();
-    }
+    final MovieDetailsViewModel model = context.watch<MovieDetailsViewModel>();
+
     return Text(
       model.movieDetails?.title ?? 'Loading ...',
       style: AppTextStyle.movieTitleStyle,
@@ -71,7 +66,7 @@ class _MovieBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MovieDetails? movie =
-        NotifyProvider.watch<MovieDetailsModel>(context)?.movieDetails;
+        context.watch<MovieDetailsViewModel>().movieDetails;
     if (movie == null) {
       return const Center(child: CircularProgressIndicator());
     }

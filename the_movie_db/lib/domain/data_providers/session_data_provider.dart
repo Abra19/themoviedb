@@ -13,4 +13,6 @@ class SessionDataProvider {
   Future<void> setSessionId(String? value) => value != null
       ? _secureStorage.write(key: _Keys.sessionIdKey, value: value)
       : _secureStorage.delete(key: _Keys.sessionIdKey);
+
+  Future<void> clearStorage() => _secureStorage.delete(key: _Keys.sessionIdKey);
 }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/constants/movies_datas.dart';
 import 'package:the_movie_db/constants/score_widget.dart';
-import 'package:the_movie_db/domain/api_client/api_client.dart';
 import 'package:the_movie_db/domain/entities/general/genre.dart';
 import 'package:the_movie_db/domain/entities/general/production_country.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_credits.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/radial_percent_widget.dart';
@@ -52,11 +52,8 @@ class _TopPosterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetailsModel? model =
-        NotifyProvider.watch<MovieDetailsModel>(context);
-    if (model == null) {
-      return const SizedBox.shrink();
-    }
+    final MovieDetailsViewModel model = context.watch<MovieDetailsViewModel>();
+
     final MovieDetails? movie = model.movieDetails;
     final String? backdropPath = movie?.backdropPath;
     final String? posterPath = movie?.posterPath;
@@ -65,7 +62,7 @@ class _TopPosterWidget extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           if (backdropPath != null)
-            Image.network(ApiClient.imageUrl(backdropPath))
+            Image.network(Config.imageUrl(backdropPath))
           else
             const SizedBox.shrink(),
           Positioned(
@@ -74,7 +71,7 @@ class _TopPosterWidget extends StatelessWidget {
             bottom: 20,
             child: posterPath != null
                 ? Image.network(
-                    ApiClient.imageUrl(posterPath),
+                    Config.imageUrl(posterPath),
                     fit: BoxFit.cover,
                     height: 160,
                   )
@@ -104,7 +101,7 @@ class _MovieNameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MovieDetails? movie =
-        NotifyProvider.watch<MovieDetailsModel>(context)?.movieDetails;
+        context.watch<MovieDetailsViewModel>().movieDetails;
 
     final String? movieTitle = movie?.title;
     String? movieYear = movie?.releaseDate?.year.toString();
@@ -135,7 +132,7 @@ class _ScoreWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MovieDetails? movie =
-        NotifyProvider.watch<MovieDetailsModel>(context)?.movieDetails;
+        context.watch<MovieDetailsViewModel>().movieDetails;
     final double? voteAverage = movie?.voteAverage;
     final double percent = voteAverage != null ? voteAverage * 10 : 0.0;
 
@@ -176,11 +173,8 @@ class PlayTrailer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetailsModel? model =
-        NotifyProvider.watch<MovieDetailsModel>(context);
-    if (model == null) {
-      return const SizedBox.shrink();
-    }
+    final MovieDetailsViewModel model = context.watch<MovieDetailsViewModel>();
+
     final String? trailerKey = model.trailerKey;
 
     return trailerKey != null
@@ -218,11 +212,8 @@ class _SummaryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieDetailsModel? model =
-        NotifyProvider.watch<MovieDetailsModel>(context);
-    if (model == null) {
-      return const SizedBox.shrink();
-    }
+    final MovieDetailsViewModel model = context.watch<MovieDetailsViewModel>();
+
     String date = '';
     final DateTime? releaseDate = model.movieDetails?.releaseDate;
     if (releaseDate != null) {
@@ -302,7 +293,7 @@ class _OverviewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MovieDetails? movie =
-        NotifyProvider.watch<MovieDetailsModel>(context)?.movieDetails;
+        context.watch<MovieDetailsViewModel>().movieDetails;
     if (movie == null) {
       return const SizedBox.shrink();
     }
@@ -333,7 +324,7 @@ class _MovieCrewWidgets extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MovieDetailsCredits? credits =
-        NotifyProvider.watch<MovieDetailsModel>(context)?.movieDetails?.credits;
+        context.watch<MovieDetailsViewModel>().movieDetails?.credits;
     if (credits == null || credits.crew.isEmpty) {
       return const SizedBox.shrink();
     }

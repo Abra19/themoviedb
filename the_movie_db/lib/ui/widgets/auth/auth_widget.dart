@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:the_movie_db/ui/theme/app_button_style.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_input_style.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/auth/auth_model.dart';
 
-class AuthWidget extends StatefulWidget {
+class AuthWidget extends StatelessWidget {
   const AuthWidget({super.key});
 
-  @override
-  State<AuthWidget> createState() => _AuthWidgetState();
-}
-
-class _AuthWidgetState extends State<AuthWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +74,7 @@ class _FormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthModel? model = NotifyProvider.watch(context);
+    final AuthViewModel model = context.read<AuthViewModel>();
     final FocusNode nodeOne = FocusNode();
     nodeOne.requestFocus();
     return Column(
@@ -95,10 +90,9 @@ class _FormWidget extends StatelessWidget {
             placeholder: 'Enter username',
             prefixIcon: const Icon(Icons.face),
           ).loginInputDecoration,
-          controller: model?.loginTextController,
           autocorrect: false,
           enableSuggestions: false,
-          onTap: model?.onTapLogin,
+          onChanged: model.setLogin,
           focusNode: nodeOne,
           textInputAction: TextInputAction.next,
         ),
@@ -116,8 +110,7 @@ class _FormWidget extends StatelessWidget {
           obscureText: true,
           autocorrect: false,
           enableSuggestions: false,
-          controller: model?.passwordTextController,
-          onTap: model?.onTapPassword,
+          onChanged: model.setPassword,
           textInputAction: TextInputAction.next,
         ),
         const SizedBox(height: 30),
@@ -157,15 +150,16 @@ class _AuthButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthModel? model = NotifyProvider.watch(context);
-    final Future<void>? Function()? onPressed =
-        model?.canStartAuth == true ? () => model?.auth(context) : null;
-    final Widget child = model?.canStartAuth == true
-        ? const Text(
-            'Login',
-            style: AppTextStyle.boldBasicTextStyle,
-          )
-        : const SizedBox(
+    final AuthViewModel model = context.watch<AuthViewModel>();
+    final AuthButtonStates buttonState =
+        context.select((AuthViewModel value) => value.state.authButtonStates);
+    final Future<void> Function()? onPressed =
+        buttonState == AuthButtonStates.disabled
+            ? null
+            : () => model.onLoginPressed(context);
+
+    final Widget child = buttonState == AuthButtonStates.loading
+        ? const SizedBox(
             height: 20,
             width: 20,
             child: CircularProgressIndicator(
@@ -173,6 +167,10 @@ class _AuthButtonWidget extends StatelessWidget {
               color: AppColors.appTextColor,
               strokeWidth: 2,
             ),
+          )
+        : const Text(
+            'Login',
+            style: AppTextStyle.boldBasicTextStyle,
           );
 
     return ElevatedButton(
@@ -189,7 +187,7 @@ class _ErrorMessageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String? errorMessage =
-        NotifyProvider.watch<AuthModel>(context)?.errorMessage;
+        context.select((AuthViewModel model) => model.state.errorMessage);
 
     if (errorMessage == null) {
       return const SizedBox.shrink();

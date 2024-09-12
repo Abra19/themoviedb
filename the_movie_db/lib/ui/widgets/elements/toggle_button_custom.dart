@@ -10,7 +10,7 @@ class ToggleButtonCustom extends StatelessWidget {
     required this.isSelected,
     required this.tapFunction,
   });
-  final NewsScreenModel model;
+  final NewsScreenViewModel model;
   final List<String> options;
   final List<bool> isSelected;
   final Future<void> Function(int index) tapFunction;

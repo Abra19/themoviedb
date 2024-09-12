@@ -9,7 +9,7 @@ import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
 import 'package:the_movie_db/library/dates/date_string_from_date.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
-class TVShowsModel extends ChangeNotifier {
+class TVShowsViewModel extends ChangeNotifier {
   final ApiClient _apiClient = ApiClient();
 
   final List<TVShow> _shows = <TVShow>[];

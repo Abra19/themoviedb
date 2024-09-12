@@ -19,7 +19,8 @@ class _TVDetailsWidgetState extends State<TVDetailsWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final TVDetailsModel? model = NotifyProvider.read<TVDetailsModel>(context);
+    final TVDetailsViewModel? model =
+        NotifyProvider.read<TVDetailsViewModel>(context);
     model?.setupLocale(context);
   }
 
@@ -42,7 +43,8 @@ class _TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
+    final TVDetailsViewModel? model =
+        NotifyProvider.watch<TVDetailsViewModel>(context);
     if (model == null) {
       return const SizedBox.shrink();
     }
@@ -59,7 +61,7 @@ class _ShowBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ShowDetails? show =
-        NotifyProvider.watch<TVDetailsModel>(context)?.showDetails;
+        NotifyProvider.watch<TVDetailsViewModel>(context)?.showDetails;
     if (show == null) {
       return const Center(child: CircularProgressIndicator());
     }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/domain/api_client/api_client.dart';
+import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/domain/entities/movies/movies.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/theme/card_movie_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/errors_widget.dart';
 import 'package:the_movie_db/ui/widgets/favorites/click_favorite_widget.dart';
-import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget_model.dart';
+import 'package:the_movie_db/ui/widgets/favorites/favorite_model.dart';
 
 class FavoriteWidget extends StatefulWidget {
   const FavoriteWidget({super.key});
@@ -18,8 +18,8 @@ class FavoriteWidget extends StatefulWidget {
 class _FavoriteWidgetState extends State<FavoriteWidget> {
   @override
   Widget build(BuildContext context) {
-    final MoviesWidgetModel? model =
-        NotifyProvider.watch<MoviesWidgetModel>(context);
+    final FavoriteViewModel? model =
+        NotifyProvider.watch<FavoriteViewModel>(context);
     if (model == null) {
       return const SizedBox.shrink();
     }
@@ -49,7 +49,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                       children: <Widget>[
                         if (posterPath != null)
                           Image.network(
-                            ApiClient.imageUrl(posterPath),
+                            Config.imageUrl(posterPath),
                             width: 95,
                           )
                         else

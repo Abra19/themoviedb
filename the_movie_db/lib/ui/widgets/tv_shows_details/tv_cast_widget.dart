@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/domain/api_client/api_client.dart';
+import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_credits.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
@@ -12,7 +12,8 @@ class TVScreenCast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
+    final TVDetailsViewModel? model =
+        NotifyProvider.watch<TVDetailsViewModel>(context);
     final MovieDetailsCredits? credits = model?.showDetails?.credits;
     if (credits == null || credits.cast.isEmpty) {
       return const SizedBox.shrink();
@@ -44,7 +45,8 @@ class _ActorsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
+    final TVDetailsViewModel? model =
+        NotifyProvider.watch<TVDetailsViewModel>(context);
     final MovieDetailsCredits? credits = model?.showDetails?.credits;
     if (credits == null || credits.cast.isEmpty) {
       return const SizedBox.shrink();
@@ -68,7 +70,7 @@ class _ActorsList extends StatelessWidget {
                     AspectRatio(
                       aspectRatio: 138 / 175,
                       child: Image.network(
-                        ApiClient.imageUrl(el.profilePath!),
+                        Config.imageUrl(el.profilePath!),
                         fit: BoxFit.cover,
                       ),
                     )

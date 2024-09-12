@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
-import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget_model.dart';
+import 'package:provider/provider.dart';
+import 'package:the_movie_db/ui/widgets/movie_screen/movies_model.dart';
 
 class ClickMovieWidget extends StatelessWidget {
   const ClickMovieWidget({super.key, required this.index});
@@ -8,12 +8,11 @@ class ClickMovieWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MoviesWidgetModel? model =
-        NotifyProvider.read<MoviesWidgetModel>(context);
+    final MoviesViewModel model = context.read<MoviesViewModel>();
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => model?.onMovieClick(context, index),
+        onTap: () => model.onMovieClick(context, index),
         borderRadius: BorderRadius.circular(10),
       ),
     );

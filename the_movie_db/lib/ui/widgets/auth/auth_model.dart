@@ -1,69 +1,93 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/domain/api_client/api_client.dart';
-import 'package:the_movie_db/domain/data_providers/session_data_provider.dart';
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
+import 'package:the_movie_db/domain/services/auth_service.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
-class AuthModel extends ChangeNotifier {
-  final ApiClient _apiClient = ApiClient();
-  final TextEditingController loginTextController = TextEditingController();
-  final TextEditingController passwordTextController = TextEditingController();
-  final TextEditingController phoneTextController = TextEditingController();
+enum AuthButtonStates {
+  disabled,
+  enabled,
+  loading,
+}
 
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
+class AuthViewModelState {
+  AuthViewModelState({
+    this.login = '',
+    this.password = '',
+    this.errorMessage = '',
+    this.authButtonStates = AuthButtonStates.disabled,
+  });
+  String login;
+  String password;
+  String? errorMessage;
+  AuthButtonStates authButtonStates;
+}
 
-  bool isAuthInProgress = false;
-  bool get canStartAuth => !isAuthInProgress;
+class AuthViewModel extends ChangeNotifier {
+  final AuthService authService = AuthService();
 
-  final SessionDataProvider _sessionDataProvider = SessionDataProvider();
+  final AuthViewModelState _state = AuthViewModelState();
+  AuthViewModelState get state => _state;
 
-  Future<void> auth(BuildContext context) async {
-    final String username = loginTextController.text;
-    final String password = passwordTextController.text;
+  void checkButton() {
+    if (_state.login.isEmpty || _state.password.isEmpty) {
+      _state.authButtonStates = AuthButtonStates.disabled;
+    } else {
+      _state.authButtonStates = AuthButtonStates.enabled;
+    }
+    notifyListeners();
+  }
 
-    if (username.isEmpty || password.isEmpty) {
-      _errorMessage = 'Enter both username and password';
+  void setLogin(String value) {
+    if (_state.login != value) {
+      _state.login = value.trim();
+      notifyListeners();
+    }
+    checkButton();
+  }
+
+  void setPassword(String value) {
+    if (_state.password != value) {
+      _state.password = value.trim();
+      notifyListeners();
+    }
+    checkButton();
+  }
+
+  Future<void> onLoginPressed(BuildContext context) async {
+    final String login = _state.login;
+    final String password = _state.password;
+
+    if (login.isEmpty || password.isEmpty) {
+      _state.errorMessage = 'Login or password is empty';
       notifyListeners();
       return;
     }
-    _errorMessage = null;
-    isAuthInProgress = true;
+    _state.errorMessage = '';
+    _state.authButtonStates = AuthButtonStates.loading;
     notifyListeners();
+
     try {
-      final String sessionId = await _apiClient.auth(
-        username: username,
-        password: password,
-      );
-      await _sessionDataProvider.setSessionId(sessionId);
+      await authService.login(login, password);
       if (context.mounted) {
-        await Navigator.of(context)
-            .pushReplacementNamed(MainNavigationRouteNames.root);
+        Navigator.of(context)
+            .pushReplacementNamed(MainNavigationRouteNames.mainScreen);
       }
     } on ApiClientException catch (error) {
       switch (error.type) {
         case ApiClientExceptionType.network:
-          _errorMessage = 'No internet connection';
+          _state.errorMessage = 'No internet connection';
         case ApiClientExceptionType.auth:
-          _errorMessage = 'Invalid login or password';
+          _state.errorMessage = 'Invalid login or password';
         case ApiClientExceptionType.api:
-          _errorMessage = 'Invalid API key';
+          _state.errorMessage = 'Invalid API key';
         default:
-          _errorMessage = 'Something went wrong, try again later';
+          _state.errorMessage = 'Something went wrong, try again later';
       }
     } catch (_) {
-      _errorMessage = 'Unexpected error, try again later';
+      _state.errorMessage = 'Unexpected error, try again later';
     } finally {
-      isAuthInProgress = false;
+      _state.authButtonStates = AuthButtonStates.enabled;
       notifyListeners();
     }
-  }
-
-  void onTapLogin() {
-    loginTextController.clear();
-  }
-
-  void onTapPassword() {
-    passwordTextController.clear();
   }
 }

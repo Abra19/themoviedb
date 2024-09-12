@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/domain/api_client/api_client.dart';
+import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/domain/entities/show_details/show_details.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
@@ -11,7 +11,8 @@ class TVProductionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
+    final TVDetailsViewModel? model =
+        NotifyProvider.watch<TVDetailsViewModel>(context);
     final bool inProduction = model?.showDetails?.inProduction ?? false;
     if (!inProduction) {
       return const SizedBox.shrink();
@@ -40,7 +41,8 @@ class _LastSeasonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
+    final TVDetailsViewModel? model =
+        NotifyProvider.watch<TVDetailsViewModel>(context);
     final LastEpisodeToAir? lastEpisode = model?.showDetails?.lastEpisodeToAir;
     if (model == null || lastEpisode == null) {
       return const SizedBox.shrink();
@@ -62,13 +64,13 @@ class _LastSeasonCard extends StatelessWidget {
           children: <Widget>[
             if (stillPath != null)
               Image.network(
-                ApiClient.imageUrl(stillPath),
+                Config.imageUrl(stillPath),
                 width: double.infinity,
                 fit: BoxFit.cover,
               )
             else if (backdropPath != null)
               Image.network(
-                ApiClient.imageUrl(backdropPath),
+                Config.imageUrl(backdropPath),
                 width: double.infinity,
                 fit: BoxFit.cover,
               )

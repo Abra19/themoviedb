@@ -9,8 +9,8 @@ import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
 import 'package:the_movie_db/library/dates/date_string_from_date.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
-class MovieDetailsModel extends ChangeNotifier {
-  MovieDetailsModel(this.movieId);
+class MovieDetailsViewModel extends ChangeNotifier {
+  MovieDetailsViewModel(this.movieId);
 
   final SessionDataProvider sessionProvider = SessionDataProvider();
   final ApiClient _apiClient = ApiClient();
@@ -81,8 +81,8 @@ class MovieDetailsModel extends ChangeNotifier {
     return videos.isNotEmpty ? videos.first.key : null;
   }
 
-  void showTrailer(BuildContext context) {
-    Navigator.of(context).pushNamed(
+  Future<void> showTrailer(BuildContext context) async {
+    await Navigator.of(context).pushNamed(
       MainNavigationRouteNames.movieDetailsTrailer,
       arguments: _trailerKey,
     );

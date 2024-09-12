@@ -8,7 +8,8 @@ class ClickShowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVShowsModel? model = NotifyProvider.read<TVShowsModel>(context);
+    final TVShowsViewModel? model =
+        NotifyProvider.read<TVShowsViewModel>(context);
     return Material(
       color: Colors.transparent,
       child: InkWell(

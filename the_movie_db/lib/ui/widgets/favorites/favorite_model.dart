@@ -11,7 +11,7 @@ import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
 import 'package:the_movie_db/library/dates/date_string_from_date.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
-class MoviesWidgetModel extends ChangeNotifier {
+class FavoriteViewModel extends ChangeNotifier {
   final SessionDataProvider sessionProvider = SessionDataProvider();
   final ApiClient _apiClient = ApiClient();
 
@@ -210,12 +210,6 @@ class MoviesWidgetModel extends ChangeNotifier {
     }
     _dateFormat = DateFormat.yMMMMd(locale);
     _locale = locale;
-    await _resetList();
-    notifyListeners();
-  }
-
-  Future<void> onRetryClick() async {
-    _errorMessage = null;
     await _resetList();
     notifyListeners();
   }

@@ -1,9 +1,7 @@
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/library/providers/provider.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
-import 'package:the_movie_db/ui/widgets/main_app/main_app_model.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -11,7 +9,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MainAppModel? model = Provider.read<MainAppModel>(context);
     return MaterialApp(
       title: 'The Movie DB Flutter App',
       theme: ThemeData.new(
@@ -36,7 +33,7 @@ class MainApp extends StatelessWidget {
         Locale('en', 'US'),
       ],
       routes: mainNavigation.routes,
-      initialRoute: mainNavigation.initialRoute(model?.isAuth == true),
+      initialRoute: mainNavigation.initialRoute,
       onGenerateRoute: mainNavigation.onGenerateRoute,
     );
   }

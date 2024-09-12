@@ -8,8 +8,8 @@ import 'package:the_movie_db/domain/entities/show_details/show_details.dart';
 import 'package:the_movie_db/library/dates/date_string_from_date.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
-class TVDetailsModel extends ChangeNotifier {
-  TVDetailsModel(this.showId);
+class TVDetailsViewModel extends ChangeNotifier {
+  TVDetailsViewModel(this.showId);
 
   final SessionDataProvider sessionProvider = SessionDataProvider();
   final ApiClient _apiClient = ApiClient();

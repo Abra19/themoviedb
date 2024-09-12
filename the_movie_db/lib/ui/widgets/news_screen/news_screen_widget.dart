@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
+import 'package:provider/provider.dart';
+
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/horizontal_movies_list.dart';
 import 'package:the_movie_db/ui/widgets/elements/toggle_button_custom.dart';
@@ -14,13 +15,15 @@ class NewsScreenWidget extends StatefulWidget {
 
 class _NewsScreenWidgetState extends State<NewsScreenWidget> {
   @override
-  Widget build(BuildContext context) {
-    final NewsScreenModel? model =
-        NotifyProvider.watch<NewsScreenModel>(context);
-    if (model == null) {
-      return const SizedBox.shrink();
-    }
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final NewsScreenViewModel model = context.read<NewsScreenViewModel>();
+    model.setupLocale(context);
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    final NewsScreenViewModel model = context.read<NewsScreenViewModel>();
     final List<String> periodOptions = model.periodOptions;
     final List<String> regionOptions = model.regionOptions;
 

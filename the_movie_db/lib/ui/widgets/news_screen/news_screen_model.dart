@@ -6,8 +6,8 @@ import 'package:the_movie_db/domain/entities/movies/popular_movie_response.dart'
 import 'package:the_movie_db/library/dates/date_string_from_date.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
-class NewsScreenModel extends ChangeNotifier {
-  NewsScreenModel() {
+class NewsScreenViewModel extends ChangeNotifier {
+  NewsScreenViewModel() {
     trendPeriod = periodValues[0];
     regionValueComing = regionsValuesComing[0];
     regionValuePlaying = regionsValuesPlaying[0];
@@ -133,6 +133,7 @@ class NewsScreenModel extends ChangeNotifier {
     _trendedMovies.clear();
     _newMovies.clear();
     _playingMovies.clear();
+
     final PopularMovieResponse trendedResponse =
         await _loadTrendingMovies(trendPeriod, _locale);
     _trendedMovies.addAll(trendedResponse.movies! as Iterable<Movie>);

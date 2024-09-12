@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/constants/score_widget.dart';
-import 'package:the_movie_db/domain/api_client/api_client.dart';
 import 'package:the_movie_db/domain/entities/movies/movies.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/errors_widget.dart';
@@ -14,7 +14,7 @@ class HorizontalMoviesList extends StatelessWidget {
     required this.model,
     required this.movies,
   });
-  final NewsScreenModel? model;
+  final NewsScreenViewModel? model;
   final List<Movie>? movies;
 
   @override
@@ -51,7 +51,7 @@ class HorizontalMoviesList extends StatelessWidget {
                         children: <Widget>[
                           if (posterPath != null)
                             Image.network(
-                              ApiClient.imageUrl(posterPath),
+                              Config.imageUrl(posterPath),
                               width: 105,
                             )
                           else

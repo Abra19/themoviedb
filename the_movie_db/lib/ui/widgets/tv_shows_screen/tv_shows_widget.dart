@@ -1,22 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/domain/api_client/api_client.dart';
+import 'package:provider/provider.dart';
+import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/domain/entities/shows/shows.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/theme/card_movie_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/errors_widget.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_screen/click_show_widget.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_model.dart';
 
-class TVShowsWidget extends StatelessWidget {
+class TVShowsWidget extends StatefulWidget {
   const TVShowsWidget({super.key});
 
   @override
+  State<TVShowsWidget> createState() => _TVShowsWidgetState();
+}
+
+class _TVShowsWidgetState extends State<TVShowsWidget> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final TVShowsViewModel model = context.read<TVShowsViewModel>();
+    model.setupLocale(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TVShowsModel? model = NotifyProvider.watch<TVShowsModel>(context);
-    if (model == null) {
-      return const SizedBox.shrink();
-    }
+    final TVShowsViewModel model = context.watch<TVShowsViewModel>();
+
     final String? message = model.errorMessage;
     return Stack(
       children: <Widget>[
@@ -42,7 +52,7 @@ class TVShowsWidget extends StatelessWidget {
                       children: <Widget>[
                         if (posterPath != null)
                           Image.network(
-                            ApiClient.imageUrl(posterPath),
+                            Config.imageUrl(posterPath),
                             width: 95,
                           )
                         else

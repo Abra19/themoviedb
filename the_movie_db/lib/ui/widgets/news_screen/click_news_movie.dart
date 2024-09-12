@@ -13,8 +13,8 @@ class ClickNewsMovieWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NewsScreenModel? model =
-        NotifyProvider.read<NewsScreenModel>(context);
+    final NewsScreenViewModel? model =
+        NotifyProvider.read<NewsScreenViewModel>(context);
 
     return Material(
       color: Colors.transparent,

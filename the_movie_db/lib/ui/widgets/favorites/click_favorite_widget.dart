@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
-import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget_model.dart';
+import 'package:the_movie_db/ui/widgets/favorites/favorite_model.dart';
 
 class ClickFavoriteWidget extends StatelessWidget {
   const ClickFavoriteWidget({
@@ -13,8 +13,8 @@ class ClickFavoriteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MoviesWidgetModel? model =
-        NotifyProvider.read<MoviesWidgetModel>(context);
+    final FavoriteViewModel? model =
+        NotifyProvider.read<FavoriteViewModel>(context);
     if (model == null) {
       return const SizedBox.shrink();
     }

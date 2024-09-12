@@ -19,7 +19,7 @@ class PopularMovieResponse {
   final int page;
 
   @JsonKey(name: 'results')
-  final List<Movie>? movies;
+  final List<Movie> movies;
 
   final int totalPages;
   final int totalResults;

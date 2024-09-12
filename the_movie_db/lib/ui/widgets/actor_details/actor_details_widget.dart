@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/domain/api_client/api_client.dart';
+import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/domain/entities/actors/actor_details.dart';
 import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
@@ -17,13 +17,13 @@ class _ActorDetailsWidgetState extends State<ActorDetailsWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    NotifyProvider.read<ActorDetailsModel>(context)?.setupLocale(context);
+    NotifyProvider.read<ActorDetailsViewModel>(context)?.setupLocale(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    final ActorDetailsModel? model =
-        NotifyProvider.watch<ActorDetailsModel>(context);
+    final ActorDetailsViewModel? model =
+        NotifyProvider.watch<ActorDetailsViewModel>(context);
     final ActorDetails? actor = model?.actorDetails;
     if (actor == null) {
       return const Center(child: CircularProgressIndicator());
@@ -40,7 +40,7 @@ class _ActorDetailsWidgetState extends State<ActorDetailsWidget> {
             children: <Widget>[
               if (actor.profilePath != null)
                 Image.network(
-                  ApiClient.imageUrl(actor.profilePath!),
+                  Config.imageUrl(actor.profilePath!),
                   width: double.infinity,
                   fit: BoxFit.cover,
                 )

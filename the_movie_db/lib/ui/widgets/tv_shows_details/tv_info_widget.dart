@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/constants/movies_datas.dart';
 import 'package:the_movie_db/constants/score_widget.dart';
-import 'package:the_movie_db/domain/api_client/api_client.dart';
 import 'package:the_movie_db/domain/entities/general/genre.dart';
 import 'package:the_movie_db/domain/entities/general/production_country.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_credits.dart';
@@ -52,7 +52,8 @@ class _TopPosterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
+    final TVDetailsViewModel? model =
+        NotifyProvider.watch<TVDetailsViewModel>(context);
     if (model == null) {
       return const SizedBox.shrink();
     }
@@ -64,7 +65,7 @@ class _TopPosterWidget extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           if (backdropPath != null)
-            Image.network(ApiClient.imageUrl(backdropPath))
+            Image.network(Config.imageUrl(backdropPath))
           else
             const SizedBox.shrink(),
           Positioned(
@@ -73,7 +74,7 @@ class _TopPosterWidget extends StatelessWidget {
             bottom: 20,
             child: posterPath != null
                 ? Image.network(
-                    ApiClient.imageUrl(posterPath),
+                    Config.imageUrl(posterPath),
                     fit: BoxFit.cover,
                     height: 160,
                   )
@@ -103,7 +104,7 @@ class _ShowNameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ShowDetails? show =
-        NotifyProvider.watch<TVDetailsModel>(context)?.showDetails;
+        NotifyProvider.watch<TVDetailsViewModel>(context)?.showDetails;
 
     final String? showTitle = show?.name;
     String? showYear = show?.firstAirDate?.year.toString();
@@ -134,7 +135,7 @@ class _ScoreWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ShowDetails? show =
-        NotifyProvider.watch<TVDetailsModel>(context)?.showDetails;
+        NotifyProvider.watch<TVDetailsViewModel>(context)?.showDetails;
     final double? voteAverage = show?.voteAverage;
     final double percent = voteAverage != null ? voteAverage * 10 : 0.0;
 
@@ -175,7 +176,8 @@ class PlayTrailer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
+    final TVDetailsViewModel? model =
+        NotifyProvider.watch<TVDetailsViewModel>(context);
     final String? trailerKey = model?.trailerKey;
 
     return trailerKey != null && model != null
@@ -213,7 +215,8 @@ class _SummaryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsModel? model = NotifyProvider.watch<TVDetailsModel>(context);
+    final TVDetailsViewModel? model =
+        NotifyProvider.watch<TVDetailsViewModel>(context);
     if (model == null) {
       return const SizedBox.shrink();
     }
@@ -304,7 +307,7 @@ class _OverviewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ShowDetails? show =
-        NotifyProvider.watch<TVDetailsModel>(context)?.showDetails;
+        NotifyProvider.watch<TVDetailsViewModel>(context)?.showDetails;
     if (show == null) {
       return const SizedBox.shrink();
     }
@@ -344,7 +347,7 @@ class _MovieCrewWidgets extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MovieDetailsCredits? credits =
-        NotifyProvider.watch<TVDetailsModel>(context)?.showDetails?.credits;
+        NotifyProvider.watch<TVDetailsViewModel>(context)?.showDetails?.credits;
 
     if (credits == null || credits.crew.isEmpty) {
       return const SizedBox.shrink();

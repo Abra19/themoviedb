@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
-import 'package:the_movie_db/library/providers/provider.dart';
-import 'package:the_movie_db/ui/widgets/favorites/favorite_widget.dart';
-import 'package:the_movie_db/ui/widgets/main_app/main_app_model.dart';
-import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget.dart';
-import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget_model.dart';
-import 'package:the_movie_db/ui/widgets/news_screen/news_screen_model.dart';
-import 'package:the_movie_db/ui/widgets/news_screen/news_screen_widget.dart';
-import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_model.dart';
-import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:the_movie_db/domain/factories/screen_factories.dart';
+import 'package:the_movie_db/ui/widgets/main_screen/main_screen_model.dart';
 
 class MainScreenWidget extends StatefulWidget {
   const MainScreenWidget({super.key});
@@ -19,12 +12,9 @@ class MainScreenWidget extends StatefulWidget {
 
 class _MainScreenWidgetState extends State<MainScreenWidget> {
   int _selectedIndex = 0;
-  final MoviesWidgetModel moviesModel = MoviesWidgetModel();
-  final TVShowsModel showsModel = TVShowsModel();
-  final NewsScreenModel newsModel = NewsScreenModel();
+  final ScreenFactories _screenFactory = ScreenFactories();
 
   void onSelectIndex(int index) {
-    moviesModel.resetList;
     if (_selectedIndex == index) {
       return;
     }
@@ -33,28 +23,26 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
     });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    moviesModel.setupLocale(context);
-    showsModel.setupLocale(context);
-    newsModel.setupLocale(context);
+  void refreshPage() {
+    setState(
+        () {}); // to do - in model - in depend on index - resetList and errormessage null
   }
 
   @override
   Widget build(BuildContext context) {
-    final MainAppModel? appModel = Provider.read<MainAppModel>(context);
+    final MainScreenViewModel mainModel = context.read<MainScreenViewModel>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('TMDB'),
         centerTitle: true,
         actions: <Widget>[
           IconButton(
-            onPressed: moviesModel.onRetryClick,
+            onPressed: () => mainModel.onRefreshButtonPressed(_selectedIndex),
             icon: const Icon(Icons.refresh),
           ),
           IconButton(
-            onPressed: () => appModel?.resetSession(context),
+            onPressed: () => mainModel.onLogoutButtonPressed(context),
             icon: const Icon(Icons.logout),
           ),
         ],
@@ -62,22 +50,10 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       body: IndexedStack(
         index: _selectedIndex,
         children: <Widget>[
-          NotifyProvider<NewsScreenModel>(
-            create: () => newsModel,
-            child: const NewsScreenWidget(),
-          ),
-          NotifyProvider<MoviesWidgetModel>(
-            create: () => moviesModel,
-            child: const MoviesWidget(),
-          ),
-          NotifyProvider<TVShowsModel>(
-            create: () => showsModel,
-            child: const TVShowsWidget(),
-          ),
-          NotifyProvider<MoviesWidgetModel>(
-            create: () => moviesModel,
-            child: const FavoriteWidget(),
-          ),
+          _screenFactory.makeNewsScreen(),
+          _screenFactory.makeMoviesList(),
+          _screenFactory.makeTVList(),
+          _screenFactory.makeFavoritesList(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

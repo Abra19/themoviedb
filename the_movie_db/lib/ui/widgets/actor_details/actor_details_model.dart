@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:the_movie_db/domain/api_client/api_client.dart';
 import 'package:the_movie_db/domain/entities/actors/actor_details.dart';
 
-class ActorDetailsModel extends ChangeNotifier {
-  ActorDetailsModel(this.actorId);
+class ActorDetailsViewModel extends ChangeNotifier {
+  ActorDetailsViewModel(this.actorId);
 
   final ApiClient _apiClient = ApiClient();
   final int actorId;
