@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/news_screen_model.dart';
 
 class ClickNewsMovieWidget extends StatelessWidget {
@@ -13,13 +13,12 @@ class ClickNewsMovieWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NewsScreenViewModel? model =
-        NotifyProvider.read<NewsScreenViewModel>(context);
+    final NewsScreenViewModel model = context.read<NewsScreenViewModel>();
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => model?.onMovieClick(context, index, type),
+        onTap: () => model.onMovieClick(context, index, type),
         borderRadius: BorderRadius.circular(10),
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/domain/entities/show_details/show_details.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_details/tv_details_model.dart';
@@ -11,9 +11,8 @@ class TVProductionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsViewModel? model =
-        NotifyProvider.watch<TVDetailsViewModel>(context);
-    final bool inProduction = model?.showDetails?.inProduction ?? false;
+    final TVDetailsViewModel model = context.watch<TVDetailsViewModel>();
+    final bool inProduction = model.showDetails?.inProduction ?? false;
     if (!inProduction) {
       return const SizedBox.shrink();
     }
@@ -41,10 +40,9 @@ class _LastSeasonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsViewModel? model =
-        NotifyProvider.watch<TVDetailsViewModel>(context);
-    final LastEpisodeToAir? lastEpisode = model?.showDetails?.lastEpisodeToAir;
-    if (model == null || lastEpisode == null) {
+    final TVDetailsViewModel model = context.watch<TVDetailsViewModel>();
+    final LastEpisodeToAir? lastEpisode = model.showDetails?.lastEpisodeToAir;
+    if (lastEpisode == null) {
       return const SizedBox.shrink();
     }
 

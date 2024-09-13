@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nested/nested.dart';
 import 'package:provider/provider.dart';
 import 'package:the_movie_db/ui/widgets/actor_details/actor_details_model.dart';
 import 'package:the_movie_db/ui/widgets/actor_details/actor_details_widget.dart';
@@ -15,8 +16,14 @@ import 'package:the_movie_db/ui/widgets/movie_details/movie_details_widget.dart'
 import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget.dart';
 import 'package:the_movie_db/ui/widgets/movie_screen/movies_model.dart';
 import 'package:the_movie_db/ui/widgets/movie_trailer/movie_trailer.dart';
+import 'package:the_movie_db/ui/widgets/news_screen/new_movies/new_movies_view_model.dart';
+import 'package:the_movie_db/ui/widgets/news_screen/new_movies/new_movies_widget.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/news_screen_model.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/news_screen_widget.dart';
+import 'package:the_movie_db/ui/widgets/news_screen/playing_movies/playing_movies_widget.dart';
+import 'package:the_movie_db/ui/widgets/news_screen/playing_movies/playing_view_model.dart';
+import 'package:the_movie_db/ui/widgets/news_screen/trended_movies/trended_view_model.dart';
+import 'package:the_movie_db/ui/widgets/news_screen/trended_movies/trended_widget.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_details/tv_details_model.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_details/tv_details_widget.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_model.dart';
@@ -45,6 +52,42 @@ class ScreenFactories {
       ChangeNotifierProvider<NewsScreenViewModel>(
         create: (_) => NewsScreenViewModel(),
         child: const NewsScreenWidget(),
+      );
+
+  MultiProvider makeTrendingMovies() => MultiProvider(
+        providers: <SingleChildWidget>[
+          ChangeNotifierProvider<NewsScreenViewModel>(
+            create: (_) => NewsScreenViewModel(),
+          ),
+          ChangeNotifierProvider<TrendedViewModel>(
+            create: (_) => TrendedViewModel(),
+          ),
+        ],
+        child: const TrendedMoviesWidget(),
+      );
+
+  MultiProvider makeNewMovies() => MultiProvider(
+        providers: <SingleChildWidget>[
+          ChangeNotifierProvider<NewsScreenViewModel>(
+            create: (_) => NewsScreenViewModel(),
+          ),
+          ChangeNotifierProvider<NewMoviesViewModel>(
+            create: (_) => NewMoviesViewModel(),
+          ),
+        ],
+        child: const NewMoviesWidget(),
+      );
+
+  MultiProvider makePlayingMovies() => MultiProvider(
+        providers: <SingleChildWidget>[
+          ChangeNotifierProvider<NewsScreenViewModel>(
+            create: (_) => NewsScreenViewModel(),
+          ),
+          ChangeNotifierProvider<PlayingMoviesViewModel>(
+            create: (_) => PlayingMoviesViewModel(),
+          ),
+        ],
+        child: const PlayingMoviesWidget(),
       );
 
   ChangeNotifierProvider<MoviesViewModel> makeMoviesList() =>

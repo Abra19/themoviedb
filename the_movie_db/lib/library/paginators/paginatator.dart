@@ -1,4 +1,5 @@
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
+import 'package:the_movie_db/domain/exceptions/handle_errors.dart';
 
 class PaginatorLoadResult<T> {
   PaginatorLoadResult({
@@ -40,12 +41,7 @@ class Paginator<T> {
       _entities.addAll(response.entities as Iterable<T>);
       return null;
     } on ApiClientException catch (error) {
-      switch (error.type) {
-        case ApiClientExceptionType.network:
-          return 'No internet connection';
-        default:
-          return 'Something went wrong, try again later';
-      }
+      return handleErrors(error);
     } catch (_) {
       return 'Unexpected error, try again later';
     } finally {

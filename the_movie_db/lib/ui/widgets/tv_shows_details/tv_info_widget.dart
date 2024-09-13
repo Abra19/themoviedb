@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/constants/movies_datas.dart';
 import 'package:the_movie_db/constants/score_widget.dart';
@@ -6,7 +7,6 @@ import 'package:the_movie_db/domain/entities/general/genre.dart';
 import 'package:the_movie_db/domain/entities/general/production_country.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_credits.dart';
 import 'package:the_movie_db/domain/entities/show_details/show_details.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/radial_percent_widget.dart';
@@ -52,11 +52,7 @@ class _TopPosterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsViewModel? model =
-        NotifyProvider.watch<TVDetailsViewModel>(context);
-    if (model == null) {
-      return const SizedBox.shrink();
-    }
+    final TVDetailsViewModel model = context.watch<TVDetailsViewModel>();
     final ShowDetails? show = model.showDetails;
     final String? backdropPath = show?.backdropPath;
     final String? posterPath = show?.posterPath;
@@ -103,8 +99,7 @@ class _ShowNameWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ShowDetails? show =
-        NotifyProvider.watch<TVDetailsViewModel>(context)?.showDetails;
+    final ShowDetails? show = context.watch<TVDetailsViewModel>().showDetails;
 
     final String? showTitle = show?.name;
     String? showYear = show?.firstAirDate?.year.toString();
@@ -134,8 +129,7 @@ class _ScoreWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ShowDetails? show =
-        NotifyProvider.watch<TVDetailsViewModel>(context)?.showDetails;
+    final ShowDetails? show = context.watch<TVDetailsViewModel>().showDetails;
     final double? voteAverage = show?.voteAverage;
     final double percent = voteAverage != null ? voteAverage * 10 : 0.0;
 
@@ -176,11 +170,10 @@ class PlayTrailer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsViewModel? model =
-        NotifyProvider.watch<TVDetailsViewModel>(context);
-    final String? trailerKey = model?.trailerKey;
+    final TVDetailsViewModel model = context.watch<TVDetailsViewModel>();
+    final String? trailerKey = model.trailerKey;
 
-    return trailerKey != null && model != null
+    return trailerKey != null
         ? Row(
             children: <Widget>[
               Container(
@@ -215,15 +208,12 @@ class _SummaryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsViewModel? model =
-        NotifyProvider.watch<TVDetailsViewModel>(context);
-    if (model == null) {
-      return const SizedBox.shrink();
-    }
+    final TVDetailsViewModel model = context.watch<TVDetailsViewModel>();
     String date = '';
     final DateTime? releaseDate = model.showDetails?.firstAirDate;
     if (releaseDate != null) {
-      date = model.stringFromDate(releaseDate);
+      // date = model.stringFromDate(releaseDate);
+      date = '01/01/01';
     }
 
     final List<ProductionCountry>? listCountries =
@@ -306,8 +296,7 @@ class _OverviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ShowDetails? show =
-        NotifyProvider.watch<TVDetailsViewModel>(context)?.showDetails;
+    final ShowDetails? show = context.watch<TVDetailsViewModel>().showDetails;
     if (show == null) {
       return const SizedBox.shrink();
     }
@@ -347,7 +336,7 @@ class _MovieCrewWidgets extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MovieDetailsCredits? credits =
-        NotifyProvider.watch<TVDetailsViewModel>(context)?.showDetails?.credits;
+        context.watch<TVDetailsViewModel>().showDetails?.credits;
 
     if (credits == null || credits.crew.isEmpty) {
       return const SizedBox.shrink();

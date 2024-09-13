@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
-import 'package:the_movie_db/ui/widgets/news_screen/news_screen_model.dart';
 
-class ToggleButtonCustom extends StatelessWidget {
+class ToggleButtonCustom<T> extends StatelessWidget {
   const ToggleButtonCustom({
     super.key,
     required this.model,
@@ -10,7 +9,7 @@ class ToggleButtonCustom extends StatelessWidget {
     required this.isSelected,
     required this.tapFunction,
   });
-  final NewsScreenViewModel model;
+  final T model;
   final List<String> options;
   final List<bool> isSelected;
   final Future<void> Function(int index) tapFunction;

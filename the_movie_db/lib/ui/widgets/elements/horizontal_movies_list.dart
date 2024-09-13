@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/constants/score_widget.dart';
-import 'package:the_movie_db/domain/entities/movies/movies.dart';
+import 'package:the_movie_db/types/types.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/errors_widget.dart';
 import 'package:the_movie_db/ui/widgets/elements/radial_percent_widget.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/click_news_movie.dart';
-import 'package:the_movie_db/ui/widgets/news_screen/news_screen_model.dart';
 
 class HorizontalMoviesList extends StatelessWidget {
   const HorizontalMoviesList({
     super.key,
-    required this.model,
-    required this.movies,
+    required this.datas,
+    required this.message,
   });
-  final NewsScreenViewModel? model;
-  final List<Movie>? movies;
+
+  final List<DataStructure>? datas;
+  final String message;
 
   @override
   Widget build(BuildContext context) {
-    if (model == null || movies == null || movies!.isEmpty) {
+    if (datas == null || datas!.isEmpty) {
       return const SizedBox.shrink();
     }
-    final String? message = model!.errorMessage;
 
     final ScrollController scrollController = ScrollController();
 
@@ -37,10 +36,7 @@ class HorizontalMoviesList extends StatelessWidget {
             controller: scrollController,
             primary: false,
             child: Row(
-              children: movies!.map((Movie movie) {
-                final String? posterPath = movie.posterPath;
-                final String? title = movie.title ?? movie.name;
-                final double percent = movie.voteAverage * 10;
+              children: datas!.map((DataStructure data) {
                 return Stack(
                   children: <Widget>[
                     Container(
@@ -49,28 +45,24 @@ class HorizontalMoviesList extends StatelessWidget {
                       margin: const EdgeInsets.all(8.0),
                       child: Column(
                         children: <Widget>[
-                          if (posterPath != null)
+                          if (data.posterPath != null)
                             Image.network(
-                              Config.imageUrl(posterPath),
+                              Config.imageUrl(data.posterPath!),
                               width: 105,
-                            )
-                          else
-                            const SizedBox.shrink(),
+                              height: 140,
+                              fit: BoxFit.cover,
+                            ),
                           const SizedBox(height: 30),
-                          if (title != null)
+                          if (data.title != null)
                             Text(
-                              title,
+                              data.title!,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyle.newsMoviesTitleStyle,
-                            )
-                          else
-                            const SizedBox.shrink(),
+                            ),
                           const SizedBox(height: 5),
                           Text(
-                            model!.stringFromDate(
-                              movie.releaseDate ?? movie.firstAirDate,
-                            ),
+                            data.date,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyle.movieDataNewsTextStyle,
@@ -85,7 +77,7 @@ class HorizontalMoviesList extends StatelessWidget {
                         width: 40,
                         height: 40,
                         child: RadialPercentWidget(
-                          percent: percent,
+                          percent: data.percent,
                           lineWidth: lineWidth,
                           lineColor: lineColor,
                           fillColor: fillColor,
@@ -96,10 +88,10 @@ class HorizontalMoviesList extends StatelessWidget {
                     SizedBox(
                       width: 95,
                       height: 220,
-                      child: movie.mediaType != null
+                      child: data.type != null
                           ? ClickNewsMovieWidget(
-                              index: movie.id,
-                              type: movie.mediaType!,
+                              index: data.id,
+                              type: data.type!,
                             )
                           : const SizedBox.shrink(),
                     ),

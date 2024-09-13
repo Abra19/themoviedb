@@ -8,6 +8,7 @@ import 'package:the_movie_db/domain/entities/movies/popular_movie_response.dart'
 
 import 'package:the_movie_db/domain/entities/movies/movies.dart';
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
+import 'package:the_movie_db/domain/exceptions/handle_errors.dart';
 import 'package:the_movie_db/library/dates/date_string_from_date.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
@@ -41,8 +42,8 @@ class FavoriteViewModel extends ChangeNotifier {
 
   Timer? searchDebounce;
 
-  String stringFromDate(DateTime? date) =>
-      dateStringFromDate(_dateFormat, date);
+  // String stringFromDate(DateTime? date) =>
+  //     dateStringFromDate(_dateFormat, date);
 
   Future<PopularMovieResponse> _loadMovies(int page, String locale) async {
     final String? query = _searchQuery;
@@ -87,14 +88,9 @@ class FavoriteViewModel extends ChangeNotifier {
           await _loadMovies(nextPage, _locale);
       _currentPage = response.page;
       _totalPages = response.totalPages;
-      _movies.addAll(response.movies! as Iterable<Movie>);
+      _movies.addAll(response.movies as Iterable<Movie>);
     } on ApiClientException catch (error) {
-      switch (error.type) {
-        case ApiClientExceptionType.network:
-          _errorMessage = 'No internet connection';
-        default:
-          _errorMessage = 'Something went wrong, try again later';
-      }
+      _errorMessage = handleErrors(error);
     } catch (_) {
       _errorMessage = 'Unexpected error, try again later';
     } finally {
@@ -117,19 +113,14 @@ class FavoriteViewModel extends ChangeNotifier {
       if (movieResponse == null) {
         return;
       }
-      for (final Movie movie in movieResponse.movies!) {
+      for (final Movie movie in movieResponse.movies) {
         movie.mediaType = movie.mediaType ?? (movie.mediaType = 'movie');
       }
       _currentPageMoviesFavorite = movieResponse.page;
       _totalPagesMoviesFavorite = movieResponse.totalPages;
-      _favorites.addAll(movieResponse.movies! as Iterable<Movie>);
+      _favorites.addAll(movieResponse.movies as Iterable<Movie>);
     } on ApiClientException catch (error) {
-      switch (error.type) {
-        case ApiClientExceptionType.network:
-          _errorMessage = 'No internet connection';
-        default:
-          _errorMessage = 'Something went wrong, try again later';
-      }
+      handleErrors(error);
     } catch (_) {
       _errorMessage = 'Unexpected error, try again later';
     } finally {
@@ -151,19 +142,14 @@ class FavoriteViewModel extends ChangeNotifier {
       if (showResponse == null) {
         return;
       }
-      for (final Movie show in showResponse.movies!) {
+      for (final Movie show in showResponse.movies) {
         show.mediaType = show.mediaType ?? (show.mediaType = 'tv');
       }
       _currentPageShowsFavorite = showResponse.page;
       _totalPagesShowsFavorite = showResponse.totalPages;
-      _favorites.addAll(showResponse.movies! as Iterable<Movie>);
+      _favorites.addAll(showResponse.movies as Iterable<Movie>);
     } on ApiClientException catch (error) {
-      switch (error.type) {
-        case ApiClientExceptionType.network:
-          _errorMessage = 'No internet connection';
-        default:
-          _errorMessage = 'Something went wrong, try again later';
-      }
+      _errorMessage = handleErrors(error);
     } catch (_) {
       _errorMessage = 'Unexpected error, try again later';
     } finally {

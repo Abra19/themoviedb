@@ -23,24 +23,22 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
     });
   }
 
-  void refreshPage() {
-    setState(
-        () {}); // to do - in model - in depend on index - resetList and errormessage null
-  }
-
   @override
   Widget build(BuildContext context) {
-    final MainScreenViewModel mainModel = context.read<MainScreenViewModel>();
+    final MainScreenViewModel mainModel = context.watch<MainScreenViewModel>();
+
+    final List<Widget> screens = <Widget>[
+      _screenFactory.makeNewsScreen(),
+      _screenFactory.makeMoviesList(),
+      _screenFactory.makeTVList(),
+      _screenFactory.makeFavoritesList(),
+    ];
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('TMDB'),
         centerTitle: true,
         actions: <Widget>[
-          IconButton(
-            onPressed: () => mainModel.onRefreshButtonPressed(_selectedIndex),
-            icon: const Icon(Icons.refresh),
-          ),
           IconButton(
             onPressed: () => mainModel.onLogoutButtonPressed(context),
             icon: const Icon(Icons.logout),
@@ -49,12 +47,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: <Widget>[
-          _screenFactory.makeNewsScreen(),
-          _screenFactory.makeMoviesList(),
-          _screenFactory.makeTVList(),
-          _screenFactory.makeFavoritesList(),
-        ],
+        children: screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,

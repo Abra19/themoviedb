@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/domain/entities/actors/actor_details.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/actor_details/actor_details_model.dart';
@@ -17,14 +17,13 @@ class _ActorDetailsWidgetState extends State<ActorDetailsWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    NotifyProvider.read<ActorDetailsViewModel>(context)?.setupLocale(context);
+    context.read<ActorDetailsViewModel>().setupLocale(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    final ActorDetailsViewModel? model =
-        NotifyProvider.watch<ActorDetailsViewModel>(context);
-    final ActorDetails? actor = model?.actorDetails;
+    final ActorDetailsViewModel model = context.watch<ActorDetailsViewModel>();
+    final ActorDetails? actor = model.actorDetails;
     if (actor == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -55,7 +54,7 @@ class _ActorDetailsWidgetState extends State<ActorDetailsWidget> {
                     Expanded(
                       child: Text(
                         actor.birthday != null
-                            ? model!.stringFromDate(actor.birthday)
+                            ? model.stringFromDate(actor.birthday)
                             : '',
                         style: AppTextStyle.castBirthdayStyle,
                       ),
@@ -96,7 +95,7 @@ class _ActorDetailsWidgetState extends State<ActorDetailsWidget> {
                           ),
                           Expanded(
                             child: Text(
-                              model!.stringFromDate(actor.deathday),
+                              model.stringFromDate(actor.deathday),
                               style: AppTextStyle.castBirthdayStyle,
                             ),
                           ),

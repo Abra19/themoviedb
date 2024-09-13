@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/domain/entities/movies/movies.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/theme/card_movie_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/errors_widget.dart';
@@ -18,11 +18,8 @@ class FavoriteWidget extends StatefulWidget {
 class _FavoriteWidgetState extends State<FavoriteWidget> {
   @override
   Widget build(BuildContext context) {
-    final FavoriteViewModel? model =
-        NotifyProvider.watch<FavoriteViewModel>(context);
-    if (model == null) {
-      return const SizedBox.shrink();
-    }
+    final FavoriteViewModel model = context.watch<FavoriteViewModel>();
+
     final String? message = model.errorMessage;
     return Stack(
       children: <Widget>[
@@ -70,8 +67,9 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                               else
                                 const SizedBox.shrink(),
                               const SizedBox(height: 5),
-                              Text(
-                                model.stringFromDate(movie.releaseDate),
+                              const Text(
+                                // model.stringFromDate(movie.releaseDate)
+                                '01.01.01',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: AppTextStyle.movieDataTextStyle,

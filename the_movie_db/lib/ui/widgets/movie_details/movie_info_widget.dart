@@ -7,6 +7,7 @@ import 'package:the_movie_db/domain/entities/general/genre.dart';
 import 'package:the_movie_db/domain/entities/general/production_country.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_credits.dart';
+import 'package:the_movie_db/library/dates/date_string_from_date.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/radial_percent_widget.dart';
@@ -217,7 +218,8 @@ class _SummaryWidget extends StatelessWidget {
     String date = '';
     final DateTime? releaseDate = model.movieDetails?.releaseDate;
     if (releaseDate != null) {
-      date = model.stringFromDate(releaseDate);
+      // date = stringFromDate(releaseDate, _dateFormat);
+      date = '01/01/2011'; //
     }
 
     final List<ProductionCountry>? listCountries =

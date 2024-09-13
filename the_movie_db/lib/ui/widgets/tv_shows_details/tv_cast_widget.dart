@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:the_movie_db/config/config.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_credits.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/theme/card_movie_style.dart';
@@ -12,9 +12,8 @@ class TVScreenCast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsViewModel? model =
-        NotifyProvider.watch<TVDetailsViewModel>(context);
-    final MovieDetailsCredits? credits = model?.showDetails?.credits;
+    final TVDetailsViewModel model = context.watch<TVDetailsViewModel>();
+    final MovieDetailsCredits? credits = model.showDetails?.credits;
     if (credits == null || credits.cast.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -45,9 +44,8 @@ class _ActorsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsViewModel? model =
-        NotifyProvider.watch<TVDetailsViewModel>(context);
-    final MovieDetailsCredits? credits = model?.showDetails?.credits;
+    final TVDetailsViewModel model = context.watch<TVDetailsViewModel>();
+    final MovieDetailsCredits? credits = model.showDetails?.credits;
     if (credits == null || credits.cast.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -57,7 +55,7 @@ class _ActorsList extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       children: credits.cast.map((Cast el) {
         return TextButton(
-          onPressed: () => model?.onActorClick(context, el.id),
+          onPressed: () => model.onActorClick(context, el.id),
           child: DecoratedBox(
             decoration: AppMovieCardStyle.cardDecoration,
             child: ClipRRect(

@@ -1,4 +1,4 @@
 import 'package:intl/intl.dart';
 
-String dateStringFromDate(DateFormat dateFormat, DateTime? date) =>
+String stringFromDate(DateTime? date, DateFormat dateFormat) =>
     date != null ? dateFormat.format(date) : '';

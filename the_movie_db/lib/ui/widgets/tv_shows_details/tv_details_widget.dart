@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:the_movie_db/domain/entities/show_details/show_details.dart';
-import 'package:the_movie_db/library/providers/notify_provider.dart';
 import 'package:the_movie_db/ui/theme/app_colors.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_details/tv_cast_widget.dart';
@@ -19,9 +19,8 @@ class _TVDetailsWidgetState extends State<TVDetailsWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final TVDetailsViewModel? model =
-        NotifyProvider.read<TVDetailsViewModel>(context);
-    model?.setupLocale(context);
+    final TVDetailsViewModel model = context.read<TVDetailsViewModel>();
+    model.setupLocale(context);
   }
 
   @override
@@ -43,11 +42,7 @@ class _TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVDetailsViewModel? model =
-        NotifyProvider.watch<TVDetailsViewModel>(context);
-    if (model == null) {
-      return const SizedBox.shrink();
-    }
+    final TVDetailsViewModel model = context.watch<TVDetailsViewModel>();
     return Text(
       model.showDetails?.name ?? 'Loading ...',
       style: AppTextStyle.movieTitleStyle,
@@ -60,8 +55,7 @@ class _ShowBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ShowDetails? show =
-        NotifyProvider.watch<TVDetailsViewModel>(context)?.showDetails;
+    final ShowDetails? show = context.watch<TVDetailsViewModel>().showDetails;
     if (show == null) {
       return const Center(child: CircularProgressIndicator());
     }

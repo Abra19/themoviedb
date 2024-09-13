@@ -6,7 +6,7 @@ import 'package:the_movie_db/domain/data_providers/session_data_provider.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details_video.dart';
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
-import 'package:the_movie_db/library/dates/date_string_from_date.dart';
+import 'package:the_movie_db/domain/exceptions/handle_errors.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
 class MovieDetailsViewModel extends ChangeNotifier {
@@ -32,9 +32,6 @@ class MovieDetailsViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void>? Function()? onSessionExpired;
-
-  String stringFromDate(DateTime? date) =>
-      dateStringFromDate(_dateFormat, date);
 
   Future<void> setupLocale(BuildContext context) async {
     final String locale = Localizations.localeOf(context).toLanguageTag();
@@ -102,12 +99,7 @@ class MovieDetailsViewModel extends ChangeNotifier {
       );
       _isFavorite = !_isFavorite;
     } on ApiClientException catch (error) {
-      switch (error.type) {
-        case ApiClientExceptionType.sessionExpired:
-          await onSessionExpired?.call();
-        default:
-          _errorMessage = 'Something went wrong, try again later';
-      }
+      _errorMessage = handleErrors(error);
     } catch (_) {
       _errorMessage = 'Unexpected error, try again later';
     } finally {

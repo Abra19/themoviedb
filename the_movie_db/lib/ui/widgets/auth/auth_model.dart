@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
+import 'package:the_movie_db/domain/exceptions/handle_errors.dart';
 import 'package:the_movie_db/domain/services/auth_service.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
@@ -73,16 +74,7 @@ class AuthViewModel extends ChangeNotifier {
             .pushReplacementNamed(MainNavigationRouteNames.mainScreen);
       }
     } on ApiClientException catch (error) {
-      switch (error.type) {
-        case ApiClientExceptionType.network:
-          _state.errorMessage = 'No internet connection';
-        case ApiClientExceptionType.auth:
-          _state.errorMessage = 'Invalid login or password';
-        case ApiClientExceptionType.api:
-          _state.errorMessage = 'Invalid API key';
-        default:
-          _state.errorMessage = 'Something went wrong, try again later';
-      }
+      _state.errorMessage = handleErrors(error);
     } catch (_) {
       _state.errorMessage = 'Unexpected error, try again later';
     } finally {

@@ -64,13 +64,12 @@ class MoviesViewModel extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   String _searchQuery = '';
-
-  String stringFromDate(DateTime? date) =>
-      dateStringFromDate(_dateFormat, date);
+  String get searchQuery => _searchQuery;
 
   MovieListRowData _makeRowData(Movie movie) {
     final DateTime? date = movie.releaseDate;
-    final String? releaseDate = date != null ? stringFromDate(date) : null;
+    final String? releaseDate =
+        date != null ? stringFromDate(date, _dateFormat) : null;
     return MovieListRowData(
       id: movie.id,
       title: movie.title,
@@ -109,8 +108,6 @@ class MoviesViewModel extends ChangeNotifier {
 
     await _loadMoviesNextPage();
   }
-
-  Future<void> get resetList => _resetList();
 
   Future<void> setupLocale(BuildContext context) async {
     final String locale = Localizations.localeOf(context).toLanguageTag();

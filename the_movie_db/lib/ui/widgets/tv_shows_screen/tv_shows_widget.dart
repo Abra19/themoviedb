@@ -70,8 +70,9 @@ class _TVShowsWidgetState extends State<TVShowsWidget> {
                                 style: AppTextStyle.boldBasicTextStyle,
                               ),
                               const SizedBox(height: 5),
-                              Text(
-                                model.stringFromDate(show.firstAirDate),
+                              const Text(
+                                // model.stringFromDate(show.firstAirDate),
+                                '01/01/01',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: AppTextStyle.movieDataTextStyle,

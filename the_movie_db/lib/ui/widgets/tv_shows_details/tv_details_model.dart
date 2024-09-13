@@ -27,8 +27,8 @@ class TVDetailsViewModel extends ChangeNotifier {
   String? _trailerKey;
   String? get trailerKey => _trailerKey;
 
-  String stringFromDate(DateTime? date) =>
-      dateStringFromDate(_dateFormat, date);
+  // String stringFromDate(DateTime? date) =>
+  //     dateStringFromDate(_dateFormat, date);
 
   Future<void> setupLocale(BuildContext context) async {
     final String locale = Localizations.localeOf(context).toLanguageTag();

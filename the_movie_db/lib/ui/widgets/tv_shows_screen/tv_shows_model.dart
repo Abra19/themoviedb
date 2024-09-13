@@ -6,6 +6,7 @@ import 'package:the_movie_db/domain/api_client/api_client.dart';
 import 'package:the_movie_db/domain/entities/shows/popular_shows_response.dart';
 import 'package:the_movie_db/domain/entities/shows/shows.dart';
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
+import 'package:the_movie_db/domain/exceptions/handle_errors.dart';
 import 'package:the_movie_db/library/dates/date_string_from_date.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
@@ -29,8 +30,8 @@ class TVShowsViewModel extends ChangeNotifier {
 
   Timer? searchDebounce;
 
-  String stringFromDate(DateTime? date) =>
-      dateStringFromDate(_dateFormat, date);
+  // String stringFromDate(DateTime? date) =>
+  //     dateStringFromDate(_dateFormat, date);
 
   Future<PopularTVShowsResponse> _loadShows(int page, String locale) async {
     final String? query = _searchQuery;
@@ -53,12 +54,7 @@ class TVShowsViewModel extends ChangeNotifier {
       _totalPages = response.totalPages;
       _shows.addAll(response.shows! as Iterable<TVShow>);
     } on ApiClientException catch (error) {
-      switch (error.type) {
-        case ApiClientExceptionType.network:
-          _errorMessage = 'No internet connection';
-        default:
-          _errorMessage = 'Something went wrong, try again later';
-      }
+      _errorMessage = handleErrors(error);
     } catch (_) {
       _errorMessage = 'Unexpected error, try again later';
     } finally {
