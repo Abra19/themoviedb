@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_movie_db/config/config.dart';
+import 'package:the_movie_db/types/types.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/theme/card_movie_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/errors_widget.dart';
@@ -44,7 +45,7 @@ class _SearchWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
-        decoration: AppMovieCardStyle.findFieldDecoration,
+        decoration: AppMovieCardStyle.findFieldDecorationMovie,
         onChanged: model.searchMovies,
       ),
     );

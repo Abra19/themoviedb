@@ -40,6 +40,7 @@ class NetworkClient {
     String? key,
   ]) async {
     final Uri url = _makeUri(host, path, params);
+
     try {
       final HttpClientRequest request = await _client.getUrl(url);
 

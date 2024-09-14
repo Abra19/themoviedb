@@ -3,18 +3,17 @@ import 'package:the_movie_db/domain/api_client/endpoints.dart';
 import 'package:the_movie_db/domain/api_client/network_client.dart';
 import 'package:the_movie_db/domain/entities/movies/popular_movie_response.dart';
 import 'package:the_movie_db/domain/entities/show_details/show_details.dart';
-import 'package:the_movie_db/domain/entities/shows/popular_shows_response.dart';
 
 class ShowsApiClient {
   final NetworkClient _networkClient = NetworkClient();
 
-  Future<PopularTVShowsResponse> popularShows(int page, String locale) async {
-    PopularTVShowsResponse parser(dynamic json, [String? key]) {
+  Future<PopularMovieResponse> popularShows(int page, String locale) async {
+    PopularMovieResponse parser(dynamic json, [String? key]) {
       final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
-      return PopularTVShowsResponse.fromJson(mapJson);
+      return PopularMovieResponse.fromJson(mapJson);
     }
 
-    return _networkClient.getRequest<PopularTVShowsResponse>(
+    return _networkClient.getRequest<PopularMovieResponse>(
       Config.host,
       Endpoints.getPopularTVShows,
       parser,
@@ -26,17 +25,17 @@ class ShowsApiClient {
     );
   }
 
-  Future<PopularTVShowsResponse> searchTV(
+  Future<PopularMovieResponse> searchTV(
     int page,
     String locale,
     String query,
   ) async {
-    PopularTVShowsResponse parser(dynamic json, [String? key]) {
+    PopularMovieResponse parser(dynamic json, [String? key]) {
       final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
-      return PopularTVShowsResponse.fromJson(mapJson);
+      return PopularMovieResponse.fromJson(mapJson);
     }
 
-    return _networkClient.getRequest<PopularTVShowsResponse>(
+    return _networkClient.getRequest<PopularMovieResponse>(
       Config.host,
       Endpoints.searchTVShows,
       parser,

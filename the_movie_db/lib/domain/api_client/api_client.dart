@@ -9,7 +9,6 @@ import 'package:the_movie_db/domain/entities/actors/actor_details.dart';
 import 'package:the_movie_db/domain/entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/domain/entities/movies/popular_movie_response.dart';
 import 'package:the_movie_db/domain/entities/show_details/show_details.dart';
-import 'package:the_movie_db/domain/entities/shows/popular_shows_response.dart';
 
 class ApiClient {
   Future<String> auth({
@@ -40,10 +39,10 @@ class ApiClient {
   ) =>
       MoviesApiClient().getMovieDetails(movieId, locale);
 
-  Future<PopularTVShowsResponse> popularShows(int page, String locale) =>
+  Future<PopularMovieResponse> popularShows(int page, String locale) =>
       ShowsApiClient().popularShows(page, locale);
 
-  Future<PopularTVShowsResponse> searchTV(
+  Future<PopularMovieResponse> searchTV(
     int page,
     String locale,
     String query,

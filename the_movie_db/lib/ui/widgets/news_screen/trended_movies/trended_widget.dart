@@ -66,6 +66,11 @@ class _TrendedMoviesWidgetState extends State<TrendedMoviesWidget> {
               ),
             ],
           )
-        : const Center(child: CircularProgressIndicator());
+        : const Column(
+            children: <Widget>[
+              SizedBox(height: 50),
+              Center(child: CircularProgressIndicator()),
+            ],
+          );
   }
 }

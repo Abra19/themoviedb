@@ -15,10 +15,19 @@ abstract class AppMovieCardStyle {
     ],
   );
 
-  static InputDecoration findFieldDecoration = InputDecoration(
+  static InputDecoration findFieldDecorationMovie = InputDecoration(
     filled: true,
     fillColor: Colors.white.withAlpha(235),
     border: const OutlineInputBorder(),
     labelText: 'Find movie',
   );
+
+  static InputDecoration findFieldDecorationShow = InputDecoration(
+    filled: true,
+    fillColor: Colors.white.withAlpha(235),
+    border: const OutlineInputBorder(),
+    labelText: 'Find TV show',
+  );
+
+  static var findFieldDecorationTVShow;
 }

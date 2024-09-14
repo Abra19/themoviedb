@@ -2,68 +2,72 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:the_movie_db/domain/api_client/api_client.dart';
-import 'package:the_movie_db/domain/entities/shows/popular_shows_response.dart';
-import 'package:the_movie_db/domain/entities/shows/shows.dart';
-import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
-import 'package:the_movie_db/domain/exceptions/handle_errors.dart';
-import 'package:the_movie_db/library/dates/date_string_from_date.dart';
+import 'package:the_movie_db/domain/entities/movies/movies.dart';
+import 'package:the_movie_db/domain/entities/movies/popular_movie_response.dart';
+import 'package:the_movie_db/domain/services/movies_service.dart';
+import 'package:the_movie_db/library/paginators/paginatator.dart';
+import 'package:the_movie_db/types/types.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
 class TVShowsViewModel extends ChangeNotifier {
-  final ApiClient _apiClient = ApiClient();
+  TVShowsViewModel() {
+    _popularShowPaginator = Paginator<Movie>((int page) async {
+      final PopularMovieResponse result =
+          await _moviesService.getPopularShows(page, _locale);
+      return PaginatorLoadResult<Movie>(
+        entities: result.movies,
+        currentPage: result.page,
+        totalPages: result.totalPages,
+      );
+    });
+    _searchShowPaginator = Paginator<Movie>((int page) async {
+      final PopularMovieResponse result =
+          await _moviesService.searchShows(page, _locale, _searchQuery);
+      return PaginatorLoadResult<Movie>(
+        entities: result.movies,
+        currentPage: result.page,
+        totalPages: result.totalPages,
+      );
+    });
+  }
 
-  final List<TVShow> _shows = <TVShow>[];
-  List<TVShow> get shows => List<TVShow>.unmodifiable(_shows);
+  final MoviesService _moviesService = MoviesService();
+  late final Paginator<Movie> _popularShowPaginator;
+  late final Paginator<Movie> _searchShowPaginator;
 
   String _locale = 'ru';
-  late DateFormat _dateFormat;
+  Timer? searchDebounce;
 
-  late int _currentPage;
-  late int _totalPages;
-  bool _isLoadingInProgress = false;
+  List<MovieListRowData> _shows = <MovieListRowData>[];
+  List<MovieListRowData> get shows =>
+      List<MovieListRowData>.unmodifiable(_shows);
+
+  late DateFormat _dateFormat;
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-  String? _searchQuery;
+  String _searchQuery = '';
+  String get searchQuery => _searchQuery;
 
-  Timer? searchDebounce;
-
-  // String stringFromDate(DateTime? date) =>
-  //     dateStringFromDate(_dateFormat, date);
-
-  Future<PopularTVShowsResponse> _loadShows(int page, String locale) async {
-    final String? query = _searchQuery;
-    if (query == null) {
-      return _apiClient.popularShows(page, _locale);
-    }
-    return _apiClient.searchTV(page, locale, query);
-  }
+  bool isSearchMode() => _searchQuery.isNotEmpty;
 
   Future<void> _loadShowsNextPage() async {
-    if (_currentPage >= _totalPages || _isLoadingInProgress) {
-      return;
+    if (isSearchMode()) {
+      _errorMessage = await _searchShowPaginator.loadNextPage();
+      _shows = _searchShowPaginator.entities
+          .map((Movie movie) => _moviesService.makeRowData(movie, _dateFormat))
+          .toList();
+    } else {
+      _errorMessage = await _popularShowPaginator.loadNextPage();
+      _shows = _popularShowPaginator.entities
+          .map((Movie movie) => _moviesService.makeRowData(movie, _dateFormat))
+          .toList();
     }
-    _isLoadingInProgress = true;
-    final int nextPage = _currentPage + 1;
-    try {
-      final PopularTVShowsResponse response =
-          await _loadShows(nextPage, _locale);
-      _currentPage = response.page;
-      _totalPages = response.totalPages;
-      _shows.addAll(response.shows! as Iterable<TVShow>);
-    } on ApiClientException catch (error) {
-      _errorMessage = handleErrors(error);
-    } catch (_) {
-      _errorMessage = 'Unexpected error, try again later';
-    } finally {
-      notifyListeners();
-      _isLoadingInProgress = false;
-    }
+    notifyListeners();
   }
 
-  void showAtIndex(int index) {
+  void showShowAtIndex(int index) {
     if (index < _shows.length - 1) {
       return;
     }
@@ -71,9 +75,11 @@ class TVShowsViewModel extends ChangeNotifier {
   }
 
   Future<void> _resetList() async {
-    _currentPage = 0;
-    _totalPages = 1;
+    final String? popularError = await _popularShowPaginator.reset();
+    final String? searchError = await _searchShowPaginator.reset();
+    _errorMessage = popularError ?? searchError;
     _shows.clear();
+
     await _loadShowsNextPage();
   }
 
@@ -88,12 +94,6 @@ class TVShowsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> onRetryClick() async {
-    _errorMessage = null;
-    await _resetList();
-    notifyListeners();
-  }
-
   void onShowClick(BuildContext context, int index) {
     final int id = _shows[index].id;
     Navigator.of(context).pushNamed(
@@ -104,13 +104,16 @@ class TVShowsViewModel extends ChangeNotifier {
 
   Future<void> searchShows(String query) async {
     searchDebounce?.cancel();
-    searchDebounce = Timer(const Duration(milliseconds: 250), () async {
-      final String? searchQuery = query.isNotEmpty ? query : null;
+    searchDebounce = Timer(const Duration(milliseconds: 100), () async {
+      final String searchQuery = query.isNotEmpty ? query : '';
       if (_searchQuery == searchQuery) {
         return;
       }
       _searchQuery = searchQuery;
-      await _resetList();
+      if (isSearchMode()) {
+        _errorMessage = await _searchShowPaginator.reset();
+      }
+      _loadShowsNextPage();
     });
   }
 }

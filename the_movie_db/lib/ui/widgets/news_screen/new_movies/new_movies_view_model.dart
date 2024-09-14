@@ -5,7 +5,7 @@ import 'package:the_movie_db/domain/entities/movies/movies.dart';
 import 'package:the_movie_db/domain/entities/movies/popular_movie_response.dart';
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
 import 'package:the_movie_db/domain/exceptions/handle_errors.dart';
-import 'package:the_movie_db/library/dates/date_string_from_date.dart';
+import 'package:the_movie_db/domain/services/movies_service.dart';
 import 'package:the_movie_db/types/types.dart';
 
 class NewMoviesViewModel extends ChangeNotifier {
@@ -26,7 +26,9 @@ class NewMoviesViewModel extends ChangeNotifier {
   ];
 
   List<bool> isSelectedRegion = <bool>[true, false, false];
+
   final ApiClient _apiClient = ApiClient();
+  final MoviesService _movieService = MoviesService();
 
   final List<Movie> _newMovies = <Movie>[];
   List<Movie> get newMovies => List<Movie>.unmodifiable(_newMovies);
@@ -40,21 +42,8 @@ class NewMoviesViewModel extends ChangeNotifier {
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
 
-  List<DataStructure> makeDataStructure() => _newMovies
-      .map(
-        (Movie movie) => DataStructure(
-          id: movie.id,
-          posterPath: movie.posterPath,
-          title: movie.title ?? movie.name,
-          percent: movie.voteAverage * 10,
-          date: stringFromDate(
-            movie.releaseDate ?? movie.firstAirDate,
-            _dateFormat,
-          ),
-          type: movie.mediaType,
-        ),
-      )
-      .toList();
+  List<DataStructure> makeDataStructure() =>
+      _movieService.makeDataStructure(_newMovies, _dateFormat);
 
   Future<PopularMovieResponse?> _loadNewMovies(
     String regionValue,
@@ -126,16 +115,8 @@ class NewMoviesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<bool> _changeSelector(List<bool> current, int index) {
-    return current
-        .asMap()
-        .entries
-        .map((MapEntry<int, bool> el) => el.key == index)
-        .toList();
-  }
-
   Future<void> toggleSelectedRegion(int index) async {
-    isSelectedRegion = _changeSelector(isSelectedRegion, index);
+    isSelectedRegion = _movieService.changeSelector(isSelectedRegion, index);
     regionValue = regionsValues[index];
 
     await _resetNew();

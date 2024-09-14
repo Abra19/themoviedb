@@ -4,27 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:the_movie_db/domain/entities/movies/popular_movie_response.dart';
 import 'package:the_movie_db/domain/entities/movies/movies.dart';
 import 'package:the_movie_db/domain/services/movies_service.dart';
-import 'package:the_movie_db/library/dates/date_string_from_date.dart';
 import 'package:the_movie_db/library/paginators/paginatator.dart';
+import 'package:the_movie_db/types/types.dart';
 import 'package:the_movie_db/ui/navigation/main_navigation.dart';
-
-class MovieListRowData {
-  MovieListRowData({
-    required this.id,
-    required this.title,
-    required this.name,
-    required this.posterPath,
-    required this.releaseDate,
-    required this.overview,
-  });
-
-  final int id;
-  final String? title;
-  final String? name;
-  final String? posterPath;
-  final String? releaseDate;
-  final String? overview;
-}
 
 class MoviesViewModel extends ChangeNotifier {
   MoviesViewModel() {
@@ -66,29 +48,19 @@ class MoviesViewModel extends ChangeNotifier {
   String _searchQuery = '';
   String get searchQuery => _searchQuery;
 
-  MovieListRowData _makeRowData(Movie movie) {
-    final DateTime? date = movie.releaseDate;
-    final String? releaseDate =
-        date != null ? stringFromDate(date, _dateFormat) : null;
-    return MovieListRowData(
-      id: movie.id,
-      title: movie.title,
-      name: movie.name,
-      posterPath: movie.posterPath,
-      releaseDate: releaseDate,
-      overview: movie.overview,
-    );
-  }
-
   bool isSearchMode() => _searchQuery.isNotEmpty;
 
   Future<void> _loadMoviesNextPage() async {
     if (isSearchMode()) {
-      _errorMessage = await _searchMoviesPaginator.loadMoviesNextPage();
-      _movies = _searchMoviesPaginator.entities.map(_makeRowData).toList();
+      _errorMessage = await _searchMoviesPaginator.loadNextPage();
+      _movies = _searchMoviesPaginator.entities
+          .map((Movie movie) => _moviesService.makeRowData(movie, _dateFormat))
+          .toList();
     } else {
-      _errorMessage = await _popularMoviesPaginator.loadMoviesNextPage();
-      _movies = _popularMoviesPaginator.entities.map(_makeRowData).toList();
+      _errorMessage = await _popularMoviesPaginator.loadNextPage();
+      _movies = _popularMoviesPaginator.entities
+          .map((Movie movie) => _moviesService.makeRowData(movie, _dateFormat))
+          .toList();
     }
     notifyListeners();
   }
@@ -130,7 +102,7 @@ class MoviesViewModel extends ChangeNotifier {
 
   Future<void> searchMovies(String query) async {
     searchDebounce?.cancel();
-    searchDebounce = Timer(const Duration(milliseconds: 250), () async {
+    searchDebounce = Timer(const Duration(milliseconds: 100), () async {
       final String searchQuery = query.isNotEmpty ? query : '';
       if (_searchQuery == searchQuery) {
         return;

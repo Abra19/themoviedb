@@ -28,7 +28,7 @@ class Paginator<T> {
 
   final EntityLoader<T> load;
 
-  Future<String?> loadMoviesNextPage() async {
+  Future<String?> loadNextPage() async {
     if (_currentPage >= _totalPages || _isLoadingInProgress) {
       return null;
     }
@@ -54,6 +54,6 @@ class Paginator<T> {
     _totalPages = 1;
     _entities.clear();
 
-    return loadMoviesNextPage();
+    return loadNextPage();
   }
 }
