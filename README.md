@@ -1,2 +1,2 @@
 # themoviedb
-Flutter app on moviedb API
+Flutter app on www.themoviedb.org API
