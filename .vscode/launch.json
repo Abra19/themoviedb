@@ -1,0 +1,29 @@
+{
+  // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+  // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+  // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    
+    {
+      "name": "movie_db_app",
+      "cwd": "movie_db_app",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "movie_db_app (profile mode)",
+      "cwd": "movie_db_app",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "movie_db_app (release mode)",
+      "cwd": "movie_db_app",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    }
+  ]
+}
