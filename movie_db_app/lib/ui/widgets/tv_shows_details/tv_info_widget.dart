@@ -156,7 +156,7 @@ class _ScoreWidget extends StatelessWidget {
             ],
           ),
         ),
-        // const PlayTrailer(),
+        const PlayTrailer(),
       ],
     );
   }

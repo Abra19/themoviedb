@@ -37,12 +37,12 @@ class MainNavigation {
         return MaterialPageRoute<Object>(
           builder: (_) => _screenFactory.makeActorDetails(actorId),
         );
-      // case MainNavigationRouteNames.movieDetailsTrailer:
-      //   final Object? argument = settings.arguments;
-      //   final String trailerKey = argument is String ? argument : '';
-      //   return MaterialPageRoute<Object>(
-      //     builder: (_) => _screenFactory.makeTrailer(trailerKey),
-      //   );
+      case MainNavigationRouteNames.movieDetailsTrailer:
+        final Object? argument = settings.arguments;
+        final String trailerKey = argument is String ? argument : '';
+        return MaterialPageRoute<Object>(
+          builder: (_) => _screenFactory.makeTrailer(trailerKey),
+        );
       case MainNavigationRouteNames.tvDetails:
         final Object? argument = settings.arguments;
         final int seriesId = argument is int ? argument : 0;

@@ -28,6 +28,4 @@ abstract class AppMovieCardStyle {
     border: const OutlineInputBorder(),
     labelText: 'Find TV show',
   );
-
-  static var findFieldDecorationTVShow;
 }

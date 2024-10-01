@@ -138,6 +138,6 @@ class ScreenFactories {
         child: const FavoriteWidget(),
       );
 
-  // MovieTrailer makeTrailer(String trailerKey) =>
-  //     MovieTrailer(trailerKey: trailerKey);
+  MovieTrailer makeTrailer(String trailerKey) =>
+      MovieTrailer(trailerKey: trailerKey);
 }
