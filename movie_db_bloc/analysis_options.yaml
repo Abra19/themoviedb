@@ -1,0 +1,33 @@
+include: package:lint/package.yaml # Use this for packages with public API
+
+analyzer:
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
+  exclude:
+    #- '**.freezed.dart'
+    - '**/*.g.dart'
+
+# You can customize the lint rules set to your own liking. A list of all rules
+# can be found at https://dart-lang.github.io/linter/lints/options/options.html
+linter:
+  rules:
+    always_declare_return_types: true
+    always_put_control_body_on_new_line: true
+    always_specify_types: true
+    always_use_package_imports: true
+    annotate_overrides: true
+    annotate_redeclares: true
+    avoid_classes_with_only_static_members: false
+    avoid_empty_else: true
+    directives_ordering: false
+    lines_longer_than_80_chars: false
+    prefer_adjacent_string_concatenation: true
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    prefer_single_quotes: true
+    sort_constructors_first: true
+    sort_pub_dependencies: false
+    unnecessary_this: false
+    use_key_in_widget_constructors: true
+    valid_regexps: true
