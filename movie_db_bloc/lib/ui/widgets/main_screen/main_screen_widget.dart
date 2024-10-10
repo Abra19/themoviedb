@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_movie_db/domain/factories/screen_factories.dart';
-import 'package:the_movie_db/ui/widgets/main_screen/main_screen_model.dart';
+import 'package:the_movie_db/ui/navigation/main_navigation.dart';
+import 'package:the_movie_db/ui/widgets/auth/auth_view_cubit.dart';
 
 class MainScreenWidget extends StatefulWidget {
   const MainScreenWidget({super.key});
@@ -25,7 +26,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final MainScreenViewModel mainModel = context.watch<MainScreenViewModel>();
+    final AuthViewCubit cubit = context.watch<AuthViewCubit>();
 
     final List<Widget> screens = <Widget>[
       _screenFactory.makeNewsScreen(),
@@ -34,43 +35,52 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       _screenFactory.makeFavoritesList(),
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('TMDB'),
-        centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            onPressed: () => mainModel.onLogoutButtonPressed(context),
-            icon: const Icon(Icons.logout),
-          ),
-        ],
-      ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: screens,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex,
-        onTap: onSelectIndex,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'News',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.movie_filter),
-            label: 'Movies',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.tv),
-            label: 'TV Shows',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-          ),
-        ],
+    void onLogout(BuildContext context, AuthCubitState state) {
+      if (context.mounted && state is AuthCubitStateInitAuth) {
+        MainNavigation.resetNavigation(context);
+      }
+    }
+
+    return BlocListener<AuthViewCubit, AuthCubitState>(
+      listener: onLogout,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('TMDB'),
+          centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              onPressed: cubit.onLogoutPressed,
+              icon: const Icon(Icons.logout),
+            ),
+          ],
+        ),
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: screens,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: _selectedIndex,
+          onTap: onSelectIndex,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'News',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.movie_filter),
+              label: 'Movies',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.tv),
+              label: 'TV Shows',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: 'Favorites',
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -7,9 +7,9 @@ import 'package:the_movie_db/domain/api_client/api_client.dart';
 import 'package:the_movie_db/domain/events/movies_events.dart';
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
 import 'package:the_movie_db/domain/exceptions/handle_errors.dart';
-import 'package:the_movie_db/domain/server_entities/movies/movies.dart';
 import 'package:the_movie_db/domain/server_entities/movies/popular_movie_response.dart';
 import 'package:the_movie_db/domain/states/movies_state.dart';
+import 'package:the_movie_db/library/page_loader/page_loader.dart';
 
 class MoviesListBloc extends Bloc<MoviesListEvents, MoviesListState> {
   MoviesListBloc(super.initialState) {
@@ -29,34 +29,14 @@ class MoviesListBloc extends Bloc<MoviesListEvents, MoviesListState> {
 
   final ApiClient _apiClient = ApiClient();
 
-  Future<MoviesContainer?> _loadNextPage(
-    MoviesContainer moviesContainer,
-    Future<PopularMovieResponse> Function(int) loader,
-  ) async {
-    if (moviesContainer.isComplete) {
-      return null;
-    }
-    final int nextPage = moviesContainer.currentPage + 1;
-
-    final PopularMovieResponse result = await loader(nextPage);
-    final List<Movie> movies = List<Movie>.from(moviesContainer.movies)
-      ..addAll(result.movies);
-    final MoviesContainer container = moviesContainer.copyWith(
-      movies: movies,
-      currentPage: result.page,
-      totalPages: result.totalPages,
-    );
-    return container;
-  }
-
   Future<void> onMoviesListLoadNextPage(
     MoviesListLoadNextPage event,
     Emitter<MoviesListState> emit,
   ) async {
     if (state.isSearchMode) {
       try {
-        final MoviesContainer? newContainer =
-            await _loadNextPage(state.searchMoviesContainer, (int page) async {
+        final MoviesContainer? newContainer = await PageLoader.loadNextPage(
+            state.searchMoviesContainer, (int page) async {
           final PopularMovieResponse result = await _apiClient.searchMovie(
             page,
             event.locale,
@@ -79,8 +59,8 @@ class MoviesListBloc extends Bloc<MoviesListEvents, MoviesListState> {
       }
     } else {
       try {
-        final MoviesContainer? newContainer =
-            await _loadNextPage(state.popularMoviesContainer, (int page) async {
+        final MoviesContainer? newContainer = await PageLoader.loadNextPage(
+            state.popularMoviesContainer, (int page) async {
           final PopularMovieResponse result = await _apiClient.popularMovie(
             page,
             event.locale,

@@ -60,11 +60,12 @@ class ScreenFactories {
     );
   }
 
-  ChangeNotifierProvider<MainScreenViewModel> makeMainScreen() {
-    // _authBloc?.close();
-    // _authBloc = null;
-    return ChangeNotifierProvider<MainScreenViewModel>(
-      create: (_) => MainScreenViewModel(),
+  BlocProvider<AuthViewCubit> makeMainScreen() {
+    return BlocProvider<AuthViewCubit>(
+      create: (_) => AuthViewCubit(
+        authBlock: _getOrCreateAuthBloc(),
+        initialState: AuthCubitStateInitAuth(),
+      ),
       child: const MainScreenWidget(),
     );
   }

@@ -103,6 +103,11 @@ class AuthViewCubit extends Cubit<AuthCubitState> {
     authBlock.add(LoginEvent(login: login, password: password));
   }
 
+  Future<void> onLogoutPressed() async {
+    emit(AuthCubitStateInitAuth());
+    authBlock.add(LogoutEvent());
+  }
+
   @override
   Future<void> close() {
     authBlockSubscription.cancel();
