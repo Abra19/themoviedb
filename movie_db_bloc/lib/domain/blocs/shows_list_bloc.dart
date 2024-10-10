@@ -4,24 +4,24 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_movie_db/constants/errors_text.dart';
 import 'package:the_movie_db/domain/api_client/api_client.dart';
-import 'package:the_movie_db/domain/events/movies_events.dart';
+import 'package:the_movie_db/domain/events/shows_events.dart';
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
 import 'package:the_movie_db/domain/exceptions/handle_errors.dart';
 import 'package:the_movie_db/domain/server_entities/movies/popular_movie_response.dart';
-import 'package:the_movie_db/domain/states/movies_state.dart';
+import 'package:the_movie_db/domain/states/shows_state.dart';
 import 'package:the_movie_db/library/page_loader/page_loader.dart';
 import 'package:the_movie_db/types/types.dart';
 
-class MoviesListBloc extends Bloc<MoviesListEvents, MoviesListState> {
-  MoviesListBloc(super.initialState) {
-    on<MoviesListEvents>(
-      (MoviesListEvents event, Emitter<MoviesListState> emit) async {
-        if (event is MoviesListLoadNextPage) {
-          await onMoviesListLoadNextPage(event, emit);
-        } else if (event is MoviesListReset) {
-          await onMoviesListReset(event, emit);
-        } else if (event is MoviesListSearch) {
-          await onMoviesListSearch(event, emit);
+class ShowsListBloc extends Bloc<ShowsListEvents, ShowsListState> {
+  ShowsListBloc(super.initialState) {
+    on<ShowsListEvents>(
+      (ShowsListEvents event, Emitter<ShowsListState> emit) async {
+        if (event is ShowsListLoadNextPage) {
+          await onShowsListLoadNextPage(event, emit);
+        } else if (event is ShowsListReset) {
+          await onShowsListReset(event, emit);
+        } else if (event is ShowsListSearch) {
+          await onShowsListSearch(event, emit);
         }
       },
       transformer: sequential(),
@@ -30,15 +30,15 @@ class MoviesListBloc extends Bloc<MoviesListEvents, MoviesListState> {
 
   final ApiClient _apiClient = ApiClient();
 
-  Future<void> onMoviesListLoadNextPage(
-    MoviesListLoadNextPage event,
-    Emitter<MoviesListState> emit,
+  Future<void> onShowsListLoadNextPage(
+    ShowsListLoadNextPage event,
+    Emitter<ShowsListState> emit,
   ) async {
     if (state.isSearchMode) {
       try {
         final MoviesContainer? newContainer = await PageLoader.loadNextPage(
-            state.searchMoviesContainer, (int page) async {
-          final PopularMovieResponse result = await _apiClient.searchMovie(
+            state.searchShowsContainer, (int page) async {
+          final PopularMovieResponse result = await _apiClient.searchTV(
             page,
             event.locale,
             state.searchQuery,
@@ -46,8 +46,8 @@ class MoviesListBloc extends Bloc<MoviesListEvents, MoviesListState> {
           return result;
         });
         if (newContainer != null) {
-          final MoviesListState newState = state.copyWith(
-            searchMoviesContainer: newContainer,
+          final ShowsListState newState = state.copyWith(
+            searchShowsContainer: newContainer,
           );
           emit(newState);
         }
@@ -61,16 +61,16 @@ class MoviesListBloc extends Bloc<MoviesListEvents, MoviesListState> {
     } else {
       try {
         final MoviesContainer? newContainer = await PageLoader.loadNextPage(
-            state.popularMoviesContainer, (int page) async {
-          final PopularMovieResponse result = await _apiClient.popularMovie(
+            state.popularShowsContainer, (int page) async {
+          final PopularMovieResponse result = await _apiClient.popularShows(
             page,
             event.locale,
           );
           return result;
         });
         if (newContainer != null) {
-          final MoviesListState newState = state.copyWith(
-            popularMoviesContainer: newContainer,
+          final ShowsListState newState = state.copyWith(
+            popularShowsContainer: newContainer,
           );
           emit(newState);
         }
@@ -84,24 +84,24 @@ class MoviesListBloc extends Bloc<MoviesListEvents, MoviesListState> {
     }
   }
 
-  Future<void> onMoviesListReset(
-    MoviesListReset event,
-    Emitter<MoviesListState> emit,
+  Future<void> onShowsListReset(
+    ShowsListReset event,
+    Emitter<ShowsListState> emit,
   ) async {
-    emit(MoviesListState.init());
+    emit(ShowsListState.init());
   }
 
-  Future<void> onMoviesListSearch(
-    MoviesListSearch event,
-    Emitter<MoviesListState> emit,
+  Future<void> onShowsListSearch(
+    ShowsListSearch event,
+    Emitter<ShowsListState> emit,
   ) async {
     if (state.searchQuery == event.query) {
       return;
     }
 
-    final MoviesListState newState = state.copyWith(
+    final ShowsListState newState = state.copyWith(
       searchQuery: event.query,
-      searchMoviesContainer: const MoviesContainer.init(),
+      searchShowsContainer: const MoviesContainer.init(),
     );
     emit(newState);
   }

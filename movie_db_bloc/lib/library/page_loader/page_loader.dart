@@ -1,6 +1,6 @@
 import 'package:the_movie_db/domain/server_entities/movies/movies.dart';
 import 'package:the_movie_db/domain/server_entities/movies/popular_movie_response.dart';
-import 'package:the_movie_db/domain/states/movies_state.dart';
+import 'package:the_movie_db/types/types.dart';
 
 abstract class PageLoader {
   static Future<MoviesContainer?> loadNextPage(

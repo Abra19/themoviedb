@@ -2,8 +2,10 @@ import 'package:nested/nested.dart';
 import 'package:provider/provider.dart';
 import 'package:the_movie_db/domain/blocs/auth_bloc.dart';
 import 'package:the_movie_db/domain/blocs/movies_list_bloc.dart';
+import 'package:the_movie_db/domain/blocs/shows_list_bloc.dart';
 import 'package:the_movie_db/domain/states/auth_state.dart';
 import 'package:the_movie_db/domain/states/movies_state.dart';
+import 'package:the_movie_db/domain/states/shows_state.dart';
 import 'package:the_movie_db/ui/widgets/actor_details/actor_details_model.dart';
 import 'package:the_movie_db/ui/widgets/actor_details/actor_details_widget.dart';
 import 'package:the_movie_db/ui/widgets/auth/auth_view_cubit.dart';
@@ -29,7 +31,7 @@ import 'package:the_movie_db/ui/widgets/news_screen/trended_movies/trended_view_
 import 'package:the_movie_db/ui/widgets/news_screen/trended_movies/trended_widget.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_details/tv_details_model.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_details/tv_details_widget.dart';
-import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_model.dart';
+import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_list_cubit.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_widget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -119,9 +121,10 @@ class ScreenFactories {
         child: const MoviesWidget(),
       );
 
-  ChangeNotifierProvider<TVShowsViewModel> makeTVList() =>
-      ChangeNotifierProvider<TVShowsViewModel>.value(
-        value: TVShowsViewModel(),
+  BlocProvider<ShowListCubit> makeTVList() => BlocProvider<ShowListCubit>(
+        create: (_) => ShowListCubit(
+          showBloc: ShowsListBloc(ShowsListState.init()),
+        ),
         child: const TVShowsWidget(),
       );
 

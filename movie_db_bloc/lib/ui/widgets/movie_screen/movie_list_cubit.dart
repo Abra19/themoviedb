@@ -8,7 +8,7 @@ import 'package:the_movie_db/domain/blocs/movies_list_bloc.dart';
 import 'package:the_movie_db/domain/events/movies_events.dart';
 import 'package:the_movie_db/domain/server_entities/movies/movies.dart';
 import 'package:the_movie_db/domain/states/movies_state.dart';
-import 'package:the_movie_db/library/dates/handle_dates.dart';
+import 'package:the_movie_db/library/make_row_data/make_row_data.dart';
 
 import 'package:the_movie_db/types/types.dart';
 
@@ -72,7 +72,7 @@ class MovieListCubit extends Cubit<MovieListCubitState> {
   void _onState(MoviesListState state) {
     final List<MovieListRowData> movies = state.movies.map((Movie movie) {
       movie.mediaType = 'movie';
-      return _makeRowData(movie, _dateFormat);
+      return HandleRowData.makeRowData(movie, _dateFormat);
     }).toList();
     final MovieListCubitState newState = this.state.copyWith(
           movies: movies,
@@ -90,25 +90,6 @@ class MovieListCubit extends Cubit<MovieListCubitState> {
     _dateFormat = DateFormat.yMMMMd(localeTag);
     movieBloc.add(MoviesListReset());
     movieBloc.add(MoviesListLoadNextPage(locale: localeTag));
-  }
-
-  MovieListRowData _makeRowData(Movie movie, DateFormat dateFormat) {
-    final DateTime? movieDate = movie.releaseDate;
-    final DateTime? showDate = movie.firstAirDate;
-    final String? releaseDate =
-        movieDate != null ? stringFromDate(movieDate, dateFormat) : null;
-    final String? firstAirDate =
-        showDate != null ? stringFromDate(showDate, dateFormat) : null;
-    return MovieListRowData(
-      id: movie.id,
-      title: movie.title,
-      name: movie.name,
-      posterPath: movie.posterPath,
-      releaseDate: releaseDate,
-      firstAirDate: firstAirDate,
-      overview: movie.overview,
-      mediaType: movie.mediaType,
-    );
   }
 
   void showMovieAtIndex(int index) {

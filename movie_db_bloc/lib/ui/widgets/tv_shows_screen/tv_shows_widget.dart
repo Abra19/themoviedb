@@ -6,7 +6,7 @@ import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/theme/card_movie_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/errors_widget.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_screen/click_show_widget.dart';
-import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_model.dart';
+import 'package:the_movie_db/ui/widgets/tv_shows_screen/tv_shows_list_cubit.dart';
 
 class TVShowsWidget extends StatefulWidget {
   const TVShowsWidget({super.key});
@@ -19,14 +19,14 @@ class _TVShowsWidgetState extends State<TVShowsWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final TVShowsViewModel model = context.read<TVShowsViewModel>();
+    final ShowListCubit cubit = context.read<ShowListCubit>();
     final Locale locale = Localizations.localeOf(context);
-    model.setupLocale(locale);
+    cubit.setupLocale(locale.languageCode);
   }
 
   @override
   Widget build(BuildContext context) {
-    final String? message = context.watch<TVShowsViewModel>().errorMessage;
+    final String message = context.watch<ShowListCubit>().errorMessage;
     return Stack(
       children: <Widget>[
         ErrorsWidget(message: message),
@@ -42,12 +42,12 @@ class _SearchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVShowsViewModel model = context.read<TVShowsViewModel>();
+    final ShowListCubit cubit = context.read<ShowListCubit>();
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
         decoration: AppMovieCardStyle.findFieldDecorationShow,
-        onChanged: model.searchShows,
+        onChanged: cubit.searchShows,
       ),
     );
   }
@@ -58,14 +58,14 @@ class _ShowListBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TVShowsViewModel model = context.watch<TVShowsViewModel>();
+    final ShowListCubit cubit = context.watch<ShowListCubit>();
     return ListView.builder(
       padding: const EdgeInsets.only(top: 76),
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      itemCount: model.shows.length,
+      itemCount: cubit.state.shows.length,
       itemExtent: 163,
       itemBuilder: (BuildContext context, int index) {
-        model.showShowAtIndex(index);
+        cubit.showShowAtIndex(index);
 
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -92,7 +92,8 @@ class _ShowsListRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MovieListRowData show = context.read<TVShowsViewModel>().shows[index];
+    final MovieListRowData show =
+        context.read<ShowListCubit>().state.shows[index];
     final String? posterPath = show.posterPath;
     final String? title = show.title ?? show.name;
     return Row(
