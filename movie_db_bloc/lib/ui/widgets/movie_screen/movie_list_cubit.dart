@@ -4,12 +4,12 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+
 import 'package:the_movie_db/domain/blocs/movies_list_bloc.dart';
 import 'package:the_movie_db/domain/events/movies_events.dart';
 import 'package:the_movie_db/domain/server_entities/movies/movies.dart';
 import 'package:the_movie_db/domain/states/movies_state.dart';
 import 'package:the_movie_db/library/make_row_data/make_row_data.dart';
-
 import 'package:the_movie_db/types/types.dart';
 
 class MovieListCubitState {
@@ -38,8 +38,6 @@ class MovieListCubitState {
   MovieListCubitState copyWith({
     List<MovieListRowData>? movies,
     String? localTag,
-    String? searchQuery,
-    String? errorMessage,
   }) {
     return MovieListCubitState(
       movies: movies ?? this.movies,
@@ -76,7 +74,6 @@ class MovieListCubit extends Cubit<MovieListCubitState> {
     }).toList();
     final MovieListCubitState newState = this.state.copyWith(
           movies: movies,
-          errorMessage: state.errorMessage,
         );
     emit(newState);
   }

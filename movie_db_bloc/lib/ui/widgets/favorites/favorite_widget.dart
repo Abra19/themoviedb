@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_movie_db/config/config.dart';
+import 'package:the_movie_db/constants/media_type_enum.dart';
 import 'package:the_movie_db/types/types.dart';
 import 'package:the_movie_db/ui/theme/app_text_style.dart';
 import 'package:the_movie_db/ui/theme/card_movie_style.dart';
 import 'package:the_movie_db/ui/widgets/elements/errors_widget.dart';
 import 'package:the_movie_db/ui/widgets/elements/toggle_button_custom.dart';
 import 'package:the_movie_db/ui/widgets/favorites/click_favorite_widget.dart';
-import 'package:the_movie_db/ui/widgets/favorites/favorite_model.dart';
+import 'package:the_movie_db/ui/widgets/favorites/favorite_list_cubit.dart';
 
 class FavoriteWidget extends StatefulWidget {
   const FavoriteWidget({super.key});
@@ -20,16 +21,20 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final FavoriteViewModel model = context.read<FavoriteViewModel>();
+    final FavoriteListCubit cubit = context.read<FavoriteListCubit>();
     final Locale locale = Localizations.localeOf(context);
-    model.setupLocale(locale);
+    cubit.setupLocale(locale.languageCode);
   }
 
   @override
   Widget build(BuildContext context) {
-    final FavoriteViewModel model = context.watch<FavoriteViewModel>();
-    final String? error = model.errorMessage;
-    final List<String> favoritesOptions = model.favoritesOptions;
+    final FavoriteListCubit cubit = context.watch<FavoriteListCubit>();
+    final String error = cubit.errorMessage;
+    final List<String> favoritesOptions = cubit.favoritesOptions;
+    final List<bool> isSelectedFavorites = <bool>[
+      cubit.state.selectedType == MediaType.movie.name,
+      cubit.state.selectedType == MediaType.tv.name,
+    ];
 
     return Column(
       children: <Widget>[
@@ -47,12 +52,12 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
                 ),
               ),
               Expanded(
-                child: ToggleButtonCustom<FavoriteViewModel>(
-                  model: model,
+                child: ToggleButtonCustom<FavoriteListCubit>(
+                  model: cubit,
                   options: favoritesOptions,
-                  isSelected: model.isSelectedFavorites,
+                  isSelected: isSelectedFavorites,
                   tapFunction: (int index) =>
-                      model.toggleSelectedFavorites(index),
+                      cubit.toggleSelectedFavorites(index),
                 ),
               ),
             ],
@@ -65,7 +70,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
             child: Stack(
               children: <Widget>[
                 ErrorsWidget(message: error),
-                _FavoriteListBuilder(model.favorites),
+                _FavoriteListBuilder(),
               ],
             ),
           ),
@@ -76,22 +81,19 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 }
 
 class _FavoriteListBuilder extends StatelessWidget {
-  const _FavoriteListBuilder(this.movies);
-
-  final List<MovieListRowData> movies;
-
   @override
   Widget build(BuildContext context) {
-    final FavoriteViewModel model = context.watch<FavoriteViewModel>();
-    final int length = model.favorites.length;
+    final FavoriteListCubit cubit = context.watch<FavoriteListCubit>();
+    final List<MovieListRowData> favorites = cubit.state.favorites;
+    final int length = favorites.length;
     return ListView.builder(
       padding: const EdgeInsets.only(top: 16),
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       itemCount: length,
       itemExtent: 163,
       itemBuilder: (BuildContext context, int index) {
-        model.showFavoritesAtIndex(index);
-        final MovieListRowData movie = model.favorites[index];
+        cubit.showFavoritesAtIndex(index);
+        final MovieListRowData movie = favorites[index];
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
           child: Stack(
@@ -102,7 +104,7 @@ class _FavoriteListBuilder extends StatelessWidget {
                 child: _FavoriteListRow(index: index, movie: movie),
               ),
               ClickFavoriteWidget(
-                index: movie.id,
+                index: index,
                 type: movie.mediaType,
               ),
             ],
@@ -114,7 +116,10 @@ class _FavoriteListBuilder extends StatelessWidget {
 }
 
 class _FavoriteListRow extends StatelessWidget {
-  const _FavoriteListRow({required this.index, required this.movie});
+  const _FavoriteListRow({
+    required this.index,
+    required this.movie,
+  });
 
   final int index;
   final MovieListRowData movie;

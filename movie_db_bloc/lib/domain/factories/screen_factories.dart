@@ -1,16 +1,18 @@
 import 'package:nested/nested.dart';
 import 'package:provider/provider.dart';
 import 'package:the_movie_db/domain/blocs/auth_bloc.dart';
+import 'package:the_movie_db/domain/blocs/favorite_lists_bloc.dart';
 import 'package:the_movie_db/domain/blocs/movies_list_bloc.dart';
 import 'package:the_movie_db/domain/blocs/shows_list_bloc.dart';
 import 'package:the_movie_db/domain/states/auth_state.dart';
+import 'package:the_movie_db/domain/states/favorites_state.dart';
 import 'package:the_movie_db/domain/states/movies_state.dart';
 import 'package:the_movie_db/domain/states/shows_state.dart';
 import 'package:the_movie_db/ui/widgets/actor_details/actor_details_model.dart';
 import 'package:the_movie_db/ui/widgets/actor_details/actor_details_widget.dart';
 import 'package:the_movie_db/ui/widgets/auth/auth_view_cubit.dart';
 import 'package:the_movie_db/ui/widgets/auth/auth_widget.dart';
-import 'package:the_movie_db/ui/widgets/favorites/favorite_model.dart';
+import 'package:the_movie_db/ui/widgets/favorites/favorite_list_cubit.dart';
 import 'package:the_movie_db/ui/widgets/favorites/favorite_widget.dart';
 import 'package:the_movie_db/ui/widgets/loader_widget/loader_widget.dart';
 import 'package:the_movie_db/ui/widgets/loader_widget/loader_view_cubit.dart';
@@ -72,12 +74,13 @@ class ScreenFactories {
     );
   }
 
+/////
   ChangeNotifierProvider<NewsScreenViewModel> makeNewsScreen() =>
       ChangeNotifierProvider<NewsScreenViewModel>.value(
         value: NewsScreenViewModel(),
         child: const NewsScreenWidget(),
       );
-
+/////
   MultiProvider makeTrendingMovies() => MultiProvider(
         providers: <SingleChildWidget>[
           ChangeNotifierProvider<NewsScreenViewModel>.value(
@@ -89,7 +92,7 @@ class ScreenFactories {
         ],
         child: const TrendedMoviesWidget(),
       );
-
+////
   MultiProvider makeNewMovies() => MultiProvider(
         providers: <SingleChildWidget>[
           ChangeNotifierProvider<NewsScreenViewModel>.value(
@@ -101,7 +104,7 @@ class ScreenFactories {
         ],
         child: const NewMoviesWidget(),
       );
-
+////
   MultiProvider makePlayingMovies() => MultiProvider(
         providers: <SingleChildWidget>[
           ChangeNotifierProvider<NewsScreenViewModel>.value(
@@ -127,7 +130,7 @@ class ScreenFactories {
         ),
         child: const TVShowsWidget(),
       );
-
+//
   MultiProvider makeMovieDetails(int movieId) => MultiProvider(
         providers: <SingleChildWidget>[
           ChangeNotifierProvider<MovieDetailsViewModel>.value(
@@ -139,7 +142,7 @@ class ScreenFactories {
         ],
         child: const MovieDetailsWidget(),
       );
-
+//
   MultiProvider makeTVDetails(int seriesId) => MultiProvider(
         providers: <SingleChildWidget>[
           ChangeNotifierProvider<TVDetailsViewModel>.value(
@@ -151,16 +154,18 @@ class ScreenFactories {
         ],
         child: const TVDetailsWidget(),
       );
-
+//
   ChangeNotifierProvider<ActorDetailsViewModel> makeActorDetails(int actorId) =>
       ChangeNotifierProvider<ActorDetailsViewModel>.value(
         value: ActorDetailsViewModel(actorId),
         child: const ActorDetailsWidget(),
       );
 
-  ChangeNotifierProvider<FavoriteViewModel> makeFavoritesList() =>
-      ChangeNotifierProvider<FavoriteViewModel>.value(
-        value: FavoriteViewModel(),
+  BlocProvider<FavoriteListCubit> makeFavoritesList() =>
+      BlocProvider<FavoriteListCubit>(
+        create: (_) => FavoriteListCubit(
+          favoritesBloc: FavoriteListsBloc(FavoriteListsState.init()),
+        ),
         child: const FavoriteWidget(),
       );
 
