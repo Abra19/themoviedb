@@ -118,7 +118,7 @@ class ScreenFactories {
         ),
         child: const TVShowsWidget(),
       );
-//
+
   MultiProvider makeMovieDetails(int movieId) => MultiProvider(
         providers: <SingleChildWidget>[
           ChangeNotifierProvider<MovieDetailsViewModel>.value(
@@ -130,7 +130,7 @@ class ScreenFactories {
         ],
         child: const MovieDetailsWidget(),
       );
-//
+
   MultiProvider makeTVDetails(int seriesId) => MultiProvider(
         providers: <SingleChildWidget>[
           ChangeNotifierProvider<TVDetailsViewModel>.value(
@@ -142,7 +142,7 @@ class ScreenFactories {
         ],
         child: const TVDetailsWidget(),
       );
-//
+
   ChangeNotifierProvider<ActorDetailsViewModel> makeActorDetails(int actorId) =>
       ChangeNotifierProvider<ActorDetailsViewModel>.value(
         value: ActorDetailsViewModel(actorId),
