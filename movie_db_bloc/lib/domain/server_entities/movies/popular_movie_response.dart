@@ -12,6 +12,12 @@ class PopularMovieResponse {
     this.totalResults = 0,
   });
 
+  PopularMovieResponse.init()
+      : page = 0,
+        movies = <Movie>[],
+        totalPages = 0,
+        totalResults = 0;
+
   factory PopularMovieResponse.fromJson(Map<String, dynamic> json) =>
       _$PopularMovieResponseFromJson(json);
   Map<String, dynamic> toJson() => _$PopularMovieResponseToJson(this);

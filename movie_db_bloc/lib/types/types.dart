@@ -31,6 +31,7 @@ class MovieListRowData {
     required this.firstAirDate,
     required this.overview,
     required this.mediaType,
+    this.voteAverage = 0.0,
   });
 
   final int id;
@@ -41,6 +42,7 @@ class MovieListRowData {
   final String? firstAirDate;
   final String? overview;
   final String mediaType;
+  final double voteAverage;
 }
 
 class MovieDetailsData {

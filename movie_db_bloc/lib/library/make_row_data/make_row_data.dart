@@ -20,6 +20,7 @@ class HandleRowData {
       firstAirDate: firstAirDate,
       overview: movie.overview,
       mediaType: movie.mediaType,
+      voteAverage: movie.voteAverage,
     );
   }
 }

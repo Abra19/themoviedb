@@ -3,11 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:the_movie_db/domain/blocs/auth_bloc.dart';
 import 'package:the_movie_db/domain/blocs/favorite_lists_bloc.dart';
 import 'package:the_movie_db/domain/blocs/movies_list_bloc.dart';
+import 'package:the_movie_db/domain/blocs/playing_bloc.dart';
 import 'package:the_movie_db/domain/blocs/shows_list_bloc.dart';
+import 'package:the_movie_db/domain/blocs/trended_bloc.dart';
 import 'package:the_movie_db/domain/states/auth_state.dart';
 import 'package:the_movie_db/domain/states/favorites_state.dart';
 import 'package:the_movie_db/domain/states/movies_state.dart';
+import 'package:the_movie_db/domain/states/playing_state.dart';
 import 'package:the_movie_db/domain/states/shows_state.dart';
+import 'package:the_movie_db/domain/states/trended_state.dart';
 import 'package:the_movie_db/ui/widgets/actor_details/actor_details_model.dart';
 import 'package:the_movie_db/ui/widgets/actor_details/actor_details_widget.dart';
 import 'package:the_movie_db/ui/widgets/auth/auth_view_cubit.dart';
@@ -25,11 +29,10 @@ import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget.dart';
 import 'package:the_movie_db/ui/widgets/movie_trailer/movie_trailer.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/new_movies/new_movies_view_model.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/new_movies/new_movies_widget.dart';
-import 'package:the_movie_db/ui/widgets/news_screen/news_screen_model.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/news_screen_widget.dart';
+import 'package:the_movie_db/ui/widgets/news_screen/playing_movies/playing_list_cubit.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/playing_movies/playing_movies_widget.dart';
-import 'package:the_movie_db/ui/widgets/news_screen/playing_movies/playing_view_model.dart';
-import 'package:the_movie_db/ui/widgets/news_screen/trended_movies/trended_view_model.dart';
+import 'package:the_movie_db/ui/widgets/news_screen/trended_movies/trended_list_cubit.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/trended_movies/trended_widget.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_details/tv_details_model.dart';
 import 'package:the_movie_db/ui/widgets/tv_shows_details/tv_details_widget.dart';
@@ -74,46 +77,27 @@ class ScreenFactories {
     );
   }
 
-/////
-  ChangeNotifierProvider<NewsScreenViewModel> makeNewsScreen() =>
-      ChangeNotifierProvider<NewsScreenViewModel>.value(
-        value: NewsScreenViewModel(),
-        child: const NewsScreenWidget(),
-      );
-/////
-  MultiProvider makeTrendingMovies() => MultiProvider(
-        providers: <SingleChildWidget>[
-          ChangeNotifierProvider<NewsScreenViewModel>.value(
-            value: NewsScreenViewModel(),
-          ),
-          ChangeNotifierProvider<TrendedViewModel>.value(
-            value: TrendedViewModel(),
-          ),
-        ],
+  NewsScreenWidget makeNewsScreen() => const NewsScreenWidget();
+
+  BlocProvider<TrendedListCubit> makeTrendingMovies() =>
+      BlocProvider<TrendedListCubit>(
+        create: (_) => TrendedListCubit(
+          trendedListsBloc: TrendedListBloc(TrendedListsState.init()),
+        ),
         child: const TrendedMoviesWidget(),
       );
 ////
-  MultiProvider makeNewMovies() => MultiProvider(
-        providers: <SingleChildWidget>[
-          ChangeNotifierProvider<NewsScreenViewModel>.value(
-            value: NewsScreenViewModel(),
-          ),
-          ChangeNotifierProvider<NewMoviesViewModel>.value(
-            value: NewMoviesViewModel(),
-          ),
-        ],
+  ChangeNotifierProvider<NewMoviesViewModel> makeNewMovies() =>
+      ChangeNotifierProvider<NewMoviesViewModel>.value(
+        value: NewMoviesViewModel(),
         child: const NewMoviesWidget(),
       );
-////
-  MultiProvider makePlayingMovies() => MultiProvider(
-        providers: <SingleChildWidget>[
-          ChangeNotifierProvider<NewsScreenViewModel>.value(
-            value: NewsScreenViewModel(),
-          ),
-          ChangeNotifierProvider<PlayingMoviesViewModel>.value(
-            value: PlayingMoviesViewModel(),
-          ),
-        ],
+
+  BlocProvider<PlayingListCubit> makePlayingMovies() =>
+      BlocProvider<PlayingListCubit>(
+        create: (_) => PlayingListCubit(
+          playingListsBloc: PlayingListBloc(PlayingListsState.init()),
+        ),
         child: const PlayingMoviesWidget(),
       );
 

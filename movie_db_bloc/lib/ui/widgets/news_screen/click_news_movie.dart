@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:the_movie_db/ui/widgets/news_screen/news_screen_model.dart';
+import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
 class ClickNewsMovieWidget extends StatelessWidget {
   const ClickNewsMovieWidget({
@@ -13,12 +12,24 @@ class ClickNewsMovieWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NewsScreenViewModel model = context.read<NewsScreenViewModel>();
+    void onMovieClick(BuildContext context, int id, String type) {
+      if (type == 'tv') {
+        Navigator.of(context).pushNamed(
+          MainNavigationRouteNames.tvDetails,
+          arguments: id,
+        );
+      } else {
+        Navigator.of(context).pushNamed(
+          MainNavigationRouteNames.movieDetails,
+          arguments: id,
+        );
+      }
+    }
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => model.onMovieClick(context, index, type),
+        onTap: () => onMovieClick(context, index, type),
         borderRadius: BorderRadius.circular(10),
       ),
     );
