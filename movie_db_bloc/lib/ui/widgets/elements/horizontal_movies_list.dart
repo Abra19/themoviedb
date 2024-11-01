@@ -20,7 +20,7 @@ class HorizontalMoviesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (datas == null || datas!.isEmpty) {
-      return const SizedBox.shrink();
+      return const SizedBox(height: 220);
     }
 
     final ScrollController scrollController = ScrollController();

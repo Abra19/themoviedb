@@ -3,12 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:the_movie_db/domain/blocs/auth_bloc.dart';
 import 'package:the_movie_db/domain/blocs/favorite_lists_bloc.dart';
 import 'package:the_movie_db/domain/blocs/movies_list_bloc.dart';
+import 'package:the_movie_db/domain/blocs/new_movies_bloc.dart';
 import 'package:the_movie_db/domain/blocs/playing_bloc.dart';
 import 'package:the_movie_db/domain/blocs/shows_list_bloc.dart';
 import 'package:the_movie_db/domain/blocs/trended_bloc.dart';
 import 'package:the_movie_db/domain/states/auth_state.dart';
 import 'package:the_movie_db/domain/states/favorites_state.dart';
 import 'package:the_movie_db/domain/states/movies_state.dart';
+import 'package:the_movie_db/domain/states/new_movies_state.dart';
 import 'package:the_movie_db/domain/states/playing_state.dart';
 import 'package:the_movie_db/domain/states/shows_state.dart';
 import 'package:the_movie_db/domain/states/trended_state.dart';
@@ -27,7 +29,7 @@ import 'package:the_movie_db/ui/widgets/movie_details/movie_details_widget.dart'
 import 'package:the_movie_db/ui/widgets/movie_screen/movie_list_cubit.dart';
 import 'package:the_movie_db/ui/widgets/movie_screen/movies_widget.dart';
 import 'package:the_movie_db/ui/widgets/movie_trailer/movie_trailer.dart';
-import 'package:the_movie_db/ui/widgets/news_screen/new_movies/new_movies_view_model.dart';
+import 'package:the_movie_db/ui/widgets/news_screen/new_movies/new_movies_list_cubit.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/new_movies/new_movies_widget.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/news_screen_widget.dart';
 import 'package:the_movie_db/ui/widgets/news_screen/playing_movies/playing_list_cubit.dart';
@@ -86,10 +88,12 @@ class ScreenFactories {
         ),
         child: const TrendedMoviesWidget(),
       );
-////
-  ChangeNotifierProvider<NewMoviesViewModel> makeNewMovies() =>
-      ChangeNotifierProvider<NewMoviesViewModel>.value(
-        value: NewMoviesViewModel(),
+
+  BlocProvider<NewMoviesListCubit> makeNewMovies() =>
+      BlocProvider<NewMoviesListCubit>(
+        create: (_) => NewMoviesListCubit(
+          newMoviesListsBloc: NewMoviesListBloc(NewMoviesListsState.init()),
+        ),
         child: const NewMoviesWidget(),
       );
 

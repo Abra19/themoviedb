@@ -4,13 +4,13 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+
 import 'package:the_movie_db/constants/region_enum.dart';
 import 'package:the_movie_db/domain/blocs/playing_bloc.dart';
 import 'package:the_movie_db/domain/events/playing_events.dart';
 import 'package:the_movie_db/domain/server_entities/movies/movies.dart';
 import 'package:the_movie_db/domain/states/playing_state.dart';
 import 'package:the_movie_db/library/make_row_data/make_row_data.dart';
-
 import 'package:the_movie_db/types/types.dart';
 
 class PlayingListCubitState {
@@ -29,6 +29,7 @@ class PlayingListCubitState {
     List<MovieListRowData>? playingList,
     String? localTag,
     String? selectedRegion,
+    bool? isLoading,
   }) {
     return PlayingListCubitState(
       playingList: playingList ?? this.playingList,
@@ -49,8 +50,9 @@ class PlayingListCubitState {
   }
 
   @override
-  int get hashCode =>
-      playingList.hashCode ^ localTag.hashCode ^ selectedRegion.hashCode;
+  int get hashCode {
+    return playingList.hashCode ^ localTag.hashCode ^ selectedRegion.hashCode;
+  }
 }
 
 class PlayingListCubit extends Cubit<PlayingListCubitState> {
