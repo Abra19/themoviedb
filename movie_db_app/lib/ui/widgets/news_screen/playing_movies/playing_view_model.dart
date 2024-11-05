@@ -10,7 +10,10 @@ import 'package:the_movie_db/domain/services/movies_service.dart';
 import 'package:the_movie_db/types/types.dart';
 
 class PlayingMoviesViewModel extends ChangeNotifier {
-  PlayingMoviesViewModel() {
+  PlayingMoviesViewModel({
+    required this.apiClient,
+    required this.movieService,
+  }) {
     regionValue = regionsValues[0];
   }
 
@@ -28,8 +31,8 @@ class PlayingMoviesViewModel extends ChangeNotifier {
 
   List<bool> isSelectedRegion = <bool>[true, false, false];
 
-  final ApiClient _apiClient = ApiClient();
-  final MoviesService _movieService = MoviesService();
+  final ApiClientFactory apiClient;
+  final MoviesService movieService;
 
   final List<Movie> _playingMovies = <Movie>[];
   List<Movie> get playingMovies => List<Movie>.unmodifiable(_playingMovies);
@@ -44,7 +47,7 @@ class PlayingMoviesViewModel extends ChangeNotifier {
   String get errorMessage => _errorMessage;
 
   List<DataStructure> makeDataStructure() =>
-      _movieService.makeDataStructure(_playingMovies, _dateFormat);
+      movieService.makeDataStructure(_playingMovies, _dateFormat);
 
   Future<PopularMovieResponse?> _loadPlayingMovies(
     String regionValue,
@@ -52,7 +55,7 @@ class PlayingMoviesViewModel extends ChangeNotifier {
   ) async {
     try {
       final PopularMovieResponse result =
-          await _apiClient.getPlayingMovies(regionValue, locale);
+          await apiClient.getPlayingMovies(regionValue, locale);
       return result;
     } on ApiClientException catch (error) {
       _errorMessage = handleErrors(error);
@@ -69,7 +72,7 @@ class PlayingMoviesViewModel extends ChangeNotifier {
   ) async {
     try {
       final PopularMovieResponse result =
-          await _apiClient.getPlayingShows(regionValue, locale);
+          await apiClient.getPlayingShows(regionValue, locale);
       return result;
     } on ApiClientException catch (error) {
       _errorMessage = handleErrors(error);
@@ -118,7 +121,7 @@ class PlayingMoviesViewModel extends ChangeNotifier {
   }
 
   Future<void> toggleSelectedRegion(int index) async {
-    isSelectedRegion = _movieService.changeSelector(isSelectedRegion, index);
+    isSelectedRegion = movieService.changeSelector(isSelectedRegion, index);
     regionValue = regionsValues[index];
 
     await _resetPlaying();

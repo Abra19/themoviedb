@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
 import 'package:the_movie_db/domain/exceptions/handle_errors.dart';
-import 'package:the_movie_db/domain/services/auth_service.dart';
-import 'package:the_movie_db/ui/navigation/main_navigation.dart';
+import 'package:the_movie_db/ui/navigation/main_navigation_actions.dart';
 
 enum AuthButtonStates {
   disabled,
@@ -23,8 +22,18 @@ class AuthViewModelState {
   AuthButtonStates authButtonStates;
 }
 
+abstract class AuthViewModelLoginProvider {
+  Future<void> login(String login, String password);
+}
+
 class AuthViewModel extends ChangeNotifier {
-  final AuthService authService = AuthService();
+  AuthViewModel({
+    required this.loginProvider,
+    required this.navigationActions,
+  });
+
+  final MainNavigationActions navigationActions;
+  final AuthViewModelLoginProvider loginProvider;
 
   final AuthViewModelState _state = AuthViewModelState();
   AuthViewModelState get state => _state;
@@ -68,9 +77,9 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await authService.login(login, password);
+      await loginProvider.login(login, password);
       if (context.mounted) {
-        MainNavigation.resetNavigation(context);
+        navigationActions.resetNavigation(context);
       }
     } on ApiClientException catch (error) {
       _state.errorMessage = handleErrors(error);

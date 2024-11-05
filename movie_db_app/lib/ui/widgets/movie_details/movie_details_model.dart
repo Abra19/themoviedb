@@ -15,14 +15,14 @@ import 'package:the_movie_db/library/dates/handle_time.dart';
 import 'package:the_movie_db/library/genres/handle_genres.dart';
 import 'package:the_movie_db/library/lists/handle_lists.dart';
 import 'package:the_movie_db/types/types.dart';
-import 'package:the_movie_db/ui/navigation/main_navigation.dart';
+import 'package:the_movie_db/ui/navigation/main_navigation_routes.dart';
 
 class MovieDetailsViewModel extends ChangeNotifier {
-  MovieDetailsViewModel(this.movieId);
+  MovieDetailsViewModel(this.movieId, this.moviesService);
 
   final int movieId;
 
-  final MoviesService _moviesService = MoviesService();
+  final MoviesService moviesService;
 
   final LocalStorage _localeStorage = LocalStorage();
   late DateFormat _dateFormat;
@@ -86,7 +86,7 @@ class MovieDetailsViewModel extends ChangeNotifier {
 
   Future<void> loadMovieDetails(int movieId) async {
     try {
-      final MoviesDetailsLocal data = await _moviesService.loadMovieDetails(
+      final MoviesDetailsLocal data = await moviesService.loadMovieDetails(
         movieId: movieId,
         locale: _localeStorage.localeTag,
       );
@@ -94,7 +94,7 @@ class MovieDetailsViewModel extends ChangeNotifier {
       updateData(data.details);
       _trailerKey = getTrailerKey(data.details);
     } on ApiClientException catch (error) {
-      _moviesService.handleAPIClientException(error, onSessionExpired);
+      moviesService.handleAPIClientException(error, onSessionExpired);
     } catch (_) {
       _errorMessage = 'Unexpected error, try again later';
     } finally {
@@ -134,7 +134,7 @@ class MovieDetailsViewModel extends ChangeNotifier {
 
   Future<void> onFavoriteClick(int movieId) async {
     try {
-      await _moviesService.postInFavoriteOnClick(
+      await moviesService.postInFavoriteOnClick(
         movieId: movieId,
         isFavorite: _isFavorite,
         mediaType: MediaType.movie,
@@ -142,7 +142,7 @@ class MovieDetailsViewModel extends ChangeNotifier {
       _isFavorite = !_isFavorite;
     } on ApiClientException catch (error) {
       _errorMessage = handleErrors(error);
-      _moviesService.handleAPIClientException(error, onSessionExpired);
+      moviesService.handleAPIClientException(error, onSessionExpired);
     } catch (_) {
       _errorMessage = 'Unexpected error, try again later';
     } finally {

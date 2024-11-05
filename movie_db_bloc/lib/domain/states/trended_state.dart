@@ -34,7 +34,9 @@ class TrendedListsState {
 
   @override
   bool operator ==(covariant TrendedListsState other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
 
     return other.trendedMovies == trendedMovies &&
         other.selectedPeriod == selectedPeriod &&

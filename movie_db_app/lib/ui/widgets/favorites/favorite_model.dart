@@ -8,13 +8,13 @@ import 'package:the_movie_db/domain/server_entities/movies/movies.dart';
 import 'package:the_movie_db/domain/services/movies_service.dart';
 import 'package:the_movie_db/library/paginators/paginatator.dart';
 import 'package:the_movie_db/types/types.dart';
-import 'package:the_movie_db/ui/navigation/main_navigation.dart';
+import 'package:the_movie_db/ui/navigation/main_navigation_routes.dart';
 
 class FavoriteViewModel extends ChangeNotifier {
-  FavoriteViewModel() {
+  FavoriteViewModel(this.moviesService) {
     selectedType = MediaType.movie.name;
     _favoriteMoviesPaginator = Paginator<Movie>((int page) async {
-      final PopularMovieResponse? result = await _moviesService
+      final PopularMovieResponse? result = await moviesService
           .getFavoriteMovies(page: page, locale: _localeStorage.localeTag);
 
       return PaginatorLoadResult<Movie>(
@@ -24,8 +24,10 @@ class FavoriteViewModel extends ChangeNotifier {
       );
     });
     _favoriteShowsPaginator = Paginator<Movie>((int page) async {
-      final PopularMovieResponse? result = await _moviesService
-          .getFavoriteShows(page: page, locale: _localeStorage.localeTag);
+      final PopularMovieResponse? result = await moviesService.getFavoriteShows(
+        page: page,
+        locale: _localeStorage.localeTag,
+      );
 
       return PaginatorLoadResult<Movie>(
         entities: result?.movies ?? <Movie>[],
@@ -43,7 +45,7 @@ class FavoriteViewModel extends ChangeNotifier {
   List<bool> isSelectedFavorites = <bool>[true, false];
   late String selectedType;
 
-  final MoviesService _moviesService = MoviesService();
+  final MoviesService moviesService;
   late final Paginator<Movie> _favoriteMoviesPaginator;
   late final Paginator<Movie> _favoriteShowsPaginator;
   final LocalStorage _localeStorage = LocalStorage();
@@ -60,7 +62,7 @@ class FavoriteViewModel extends ChangeNotifier {
     _errorMessage = await _favoriteMoviesPaginator.loadNextPage();
     _favorites = _favoriteMoviesPaginator.entities.map((Movie movie) {
       movie.mediaType = MediaType.movie.name;
-      return _moviesService.makeRowData(movie, _dateFormat);
+      return moviesService.makeRowData(movie, _dateFormat);
     }).toList();
 
     notifyListeners();
@@ -70,7 +72,7 @@ class FavoriteViewModel extends ChangeNotifier {
     _errorMessage = await _favoriteShowsPaginator.loadNextPage();
     _favorites = _favoriteShowsPaginator.entities.map((Movie movie) {
       movie.mediaType = MediaType.tv.name;
-      return _moviesService.makeRowData(movie, _dateFormat);
+      return moviesService.makeRowData(movie, _dateFormat);
     }).toList();
 
     notifyListeners();

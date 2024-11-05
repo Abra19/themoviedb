@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:the_movie_db/domain/services/auth_service.dart';
-import 'package:the_movie_db/ui/navigation/main_navigation.dart';
+import 'package:the_movie_db/ui/navigation/main_navigation_routes.dart';
 
 class LoaderViewModel {
-  LoaderViewModel(this.context) {
+  LoaderViewModel(this.context, this.authService) {
     try {
       checkAuth();
     } catch (_) {
@@ -11,12 +11,12 @@ class LoaderViewModel {
     }
   }
 
-  final AuthService _authService = AuthService();
+  final AuthService authService;
   final BuildContext context;
   String errorMessage = '';
 
   Future<void> checkAuth() async {
-    final bool isAuth = await _authService.isAuth();
+    final bool isAuth = await authService.isAuth();
     final String nextScreen = isAuth
         ? MainNavigationRouteNames.mainScreen
         : MainNavigationRouteNames.auth;

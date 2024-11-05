@@ -9,11 +9,11 @@ import 'package:the_movie_db/library/dates/handle_dates.dart';
 import 'package:the_movie_db/types/types.dart';
 
 class ActorDetailsViewModel extends ChangeNotifier {
-  ActorDetailsViewModel(this.actorId);
+  ActorDetailsViewModel(this.actorId, this.actorService);
 
   final int actorId;
 
-  final ActorsService _actorService = ActorsService();
+  final ActorsService actorService;
 
   final LocalStorage _localeStorage = LocalStorage();
   late DateFormat _dateFormat;
@@ -53,7 +53,7 @@ class ActorDetailsViewModel extends ChangeNotifier {
 
   Future<void> loadActorDetails(int actorId) async {
     try {
-      final ActorDetails actorDetails = await _actorService.loadActorDetails(
+      final ActorDetails actorDetails = await actorService.loadActorDetails(
         actorId,
         _localeStorage.localeTag,
       );

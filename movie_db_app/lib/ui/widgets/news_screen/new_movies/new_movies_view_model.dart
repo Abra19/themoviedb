@@ -10,7 +10,10 @@ import 'package:the_movie_db/domain/services/movies_service.dart';
 import 'package:the_movie_db/types/types.dart';
 
 class NewMoviesViewModel extends ChangeNotifier {
-  NewMoviesViewModel() {
+  NewMoviesViewModel({
+    required this.apiClient,
+    required this.movieService,
+  }) {
     regionValue = regionsValues[0];
   }
 
@@ -28,8 +31,8 @@ class NewMoviesViewModel extends ChangeNotifier {
 
   List<bool> isSelectedRegion = <bool>[true, false, false];
 
-  final ApiClient _apiClient = ApiClient();
-  final MoviesService _movieService = MoviesService();
+  final ApiClientFactory apiClient;
+  final MoviesService movieService;
 
   final List<Movie> _newMovies = <Movie>[];
   List<Movie> get newMovies => List<Movie>.unmodifiable(_newMovies);
@@ -44,7 +47,7 @@ class NewMoviesViewModel extends ChangeNotifier {
   String get errorMessage => _errorMessage;
 
   List<DataStructure> makeDataStructure() =>
-      _movieService.makeDataStructure(_newMovies, _dateFormat);
+      movieService.makeDataStructure(_newMovies, _dateFormat);
 
   Future<PopularMovieResponse?> _loadNewMovies(
     String regionValue,
@@ -52,7 +55,7 @@ class NewMoviesViewModel extends ChangeNotifier {
   ) async {
     try {
       final PopularMovieResponse result =
-          await _apiClient.getNewMovies(regionValue, locale);
+          await apiClient.getNewMovies(regionValue, locale);
       return result;
     } on ApiClientException catch (error) {
       _errorMessage = handleErrors(error);
@@ -69,7 +72,7 @@ class NewMoviesViewModel extends ChangeNotifier {
   ) async {
     try {
       final PopularMovieResponse result =
-          await _apiClient.getNewShows(regionValue, locale);
+          await apiClient.getNewShows(regionValue, locale);
       return result;
     } on ApiClientException catch (error) {
       _errorMessage = handleErrors(error);
@@ -116,7 +119,7 @@ class NewMoviesViewModel extends ChangeNotifier {
   }
 
   Future<void> toggleSelectedRegion(int index) async {
-    isSelectedRegion = _movieService.changeSelector(isSelectedRegion, index);
+    isSelectedRegion = movieService.changeSelector(isSelectedRegion, index);
     regionValue = regionsValues[index];
 
     await _resetNew();

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:the_movie_db/domain/factories/screen_factories.dart';
+import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 import 'package:the_movie_db/ui/widgets/main_screen/main_screen_model.dart';
 
 class MainScreenWidget extends StatefulWidget {
-  const MainScreenWidget({super.key});
+  const MainScreenWidget({super.key, required this.screenFactory});
+
+  final ScreensFactory screenFactory;
 
   @override
   State<MainScreenWidget> createState() => _MainScreenWidgetState();
@@ -12,7 +14,6 @@ class MainScreenWidget extends StatefulWidget {
 
 class _MainScreenWidgetState extends State<MainScreenWidget> {
   int _selectedIndex = 0;
-  final ScreenFactories _screenFactory = ScreenFactories();
 
   void onSelectIndex(int index) {
     if (_selectedIndex == index) {
@@ -28,10 +29,10 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
     final MainScreenViewModel mainModel = context.watch<MainScreenViewModel>();
 
     final List<Widget> screens = <Widget>[
-      _screenFactory.makeNewsScreen(),
-      _screenFactory.makeMoviesList(),
-      _screenFactory.makeTVList(),
-      _screenFactory.makeFavoritesList(),
+      widget.screenFactory.makeNewsScreen(),
+      widget.screenFactory.makeMoviesList(),
+      widget.screenFactory.makeTVList(),
+      widget.screenFactory.makeFavoritesList(),
     ];
 
     return Scaffold(

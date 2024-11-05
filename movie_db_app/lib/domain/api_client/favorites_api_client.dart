@@ -5,15 +5,49 @@ import 'package:the_movie_db/domain/api_client/network_client.dart';
 import 'package:the_movie_db/domain/api_client/parser.dart';
 import 'package:the_movie_db/domain/server_entities/movies/popular_movie_response.dart';
 
-class FavoritesApiClient {
-  final NetworkClient _networkClient = NetworkClient();
+abstract class FavoritesApiClient {
+  Future<String> isMovieInFavorites(
+    int movieId,
+    String token,
+  );
+
+  Future<String> isShowInFavorites(
+    int showId,
+    String token,
+  );
+
+  Future<String> postInFavorites({
+    required MediaType mediaType,
+    required int mediaId,
+    required bool isFavorite,
+    required String token,
+  });
+
+  Future<PopularMovieResponse> getFavoriteMovies(
+    String locale,
+    int page,
+    String token,
+  );
+
+  Future<PopularMovieResponse> getFavoriteShows(
+    String locale,
+    int page,
+    String token,
+  );
+}
+
+class FavoritesApiClientBasic implements FavoritesApiClient {
+  FavoritesApiClientBasic({required this.networkClient});
+
+  final NetworkClient networkClient;
   final String Function(dynamic json, [String? key]) _parser = Parser.parse;
 
+  @override
   Future<String> isMovieInFavorites(
     int movieId,
     String token,
   ) async {
-    return _networkClient.getRequest(
+    return networkClient.getRequest(
       Config.host,
       Endpoints.isMovieInFavorite(movieId),
       _parser,
@@ -25,11 +59,12 @@ class FavoritesApiClient {
     );
   }
 
+  @override
   Future<String> isShowInFavorites(
     int showId,
     String token,
   ) async {
-    return _networkClient.getRequest(
+    return networkClient.getRequest(
       Config.host,
       Endpoints.isTVShowInFavorite(showId),
       _parser,
@@ -41,6 +76,7 @@ class FavoritesApiClient {
     );
   }
 
+  @override
   Future<String> postInFavorites({
     required MediaType mediaType,
     required int mediaId,
@@ -52,7 +88,7 @@ class FavoritesApiClient {
       'media_id': mediaId,
       'favorite': isFavorite,
     };
-    return _networkClient.postRequest<String>(
+    return networkClient.postRequest<String>(
       Config.host,
       Endpoints.postInFavorite(Config.accountId),
       'status_message',
@@ -65,6 +101,7 @@ class FavoritesApiClient {
     );
   }
 
+  @override
   Future<PopularMovieResponse> getFavoriteMovies(
     String locale,
     int page,
@@ -75,7 +112,7 @@ class FavoritesApiClient {
       return PopularMovieResponse.fromJson(mapJson);
     }
 
-    return _networkClient.getRequest<PopularMovieResponse>(
+    return networkClient.getRequest<PopularMovieResponse>(
       Config.host,
       Endpoints.getFavoriteMovies(Config.accountId),
       parser,
@@ -88,6 +125,7 @@ class FavoritesApiClient {
     );
   }
 
+  @override
   Future<PopularMovieResponse> getFavoriteShows(
     String locale,
     int page,
@@ -98,7 +136,7 @@ class FavoritesApiClient {
       return PopularMovieResponse.fromJson(mapJson);
     }
 
-    return _networkClient.getRequest<PopularMovieResponse>(
+    return networkClient.getRequest<PopularMovieResponse>(
       Config.host,
       Endpoints.getFavoriteTVShows(Config.accountId),
       parser,

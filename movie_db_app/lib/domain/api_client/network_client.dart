@@ -3,9 +3,30 @@ import 'dart:io';
 
 import 'package:the_movie_db/constants/errors_code.dart';
 import 'package:the_movie_db/domain/exceptions/api_client_exceptions.dart';
+import 'package:the_movie_db/library/http_client/app_http_client.dart';
 
-class NetworkClient {
-  final HttpClient _client = HttpClient();
+abstract class NetworkClient {
+  Future<T> getRequest<T>(
+    String host,
+    String path,
+    T Function(dynamic json, [String? key]) parser, [
+    Map<String, dynamic>? params,
+    String? key,
+  ]);
+  Future<T> postRequest<T>(
+    String host,
+    String path,
+    String key,
+    Map<String, dynamic> bodyParams,
+    T Function(dynamic json, String key) parser, [
+    Map<String, dynamic>? urlParams,
+  ]);
+}
+
+class NetworkClientBasic implements NetworkClient {
+  const NetworkClientBasic({required this.client});
+
+  final AppHttpClient client;
 
   Uri _makeUri(String host, String path, [Map<String, dynamic>? params]) {
     final Uri uri = Uri.parse('$host$path');
@@ -32,6 +53,7 @@ class NetworkClient {
     }
   }
 
+  @override
   Future<T> getRequest<T>(
     String host,
     String path,
@@ -42,7 +64,7 @@ class NetworkClient {
     final Uri url = _makeUri(host, path, params);
 
     try {
-      final HttpClientRequest request = await _client.getUrl(url);
+      final HttpClientRequest request = await client.getUrl(url);
 
       final HttpClientResponse response = await request.close();
       final dynamic json = await response.decodeJson();
@@ -57,6 +79,7 @@ class NetworkClient {
     }
   }
 
+  @override
   Future<T> postRequest<T>(
     String host,
     String path,
@@ -67,7 +90,7 @@ class NetworkClient {
   ]) async {
     final Uri url = _makeUri(host, path, urlParams);
     try {
-      final HttpClientRequest request = await _client.postUrl(url);
+      final HttpClientRequest request = await client.postUrl(url);
       request.headers.contentType = ContentType.json;
       request.write(jsonEncode(bodyParams));
 

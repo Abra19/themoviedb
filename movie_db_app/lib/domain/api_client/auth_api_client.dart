@@ -3,11 +3,20 @@ import 'package:the_movie_db/domain/api_client/endpoints.dart';
 import 'package:the_movie_db/domain/api_client/network_client.dart';
 import 'package:the_movie_db/domain/api_client/parser.dart';
 
-class AuthApiClient {
-  final NetworkClient _networkClient = NetworkClient();
+abstract class AuthApiClient {
+  Future<String> auth({
+    required String username,
+    required String password,
+  });
+}
+
+class AuthApiClientBasic implements AuthApiClient {
+  AuthApiClientBasic({required this.networkClient});
+
+  final NetworkClient networkClient;
   final String Function(dynamic json, [String? key]) _parser = Parser.parse;
   Future<String> _getToken() async {
-    return _networkClient.getRequest<String>(
+    return networkClient.getRequest<String>(
       Config.host,
       Endpoints.getNewToken,
       _parser,
@@ -26,7 +35,7 @@ class AuthApiClient {
       'password': password,
       'request_token': token,
     };
-    return _networkClient.postRequest<String>(
+    return networkClient.postRequest<String>(
       Config.host,
       Endpoints.validateToken,
       'request_token',
@@ -40,7 +49,7 @@ class AuthApiClient {
     final Map<String, String> params = <String, String>{
       'request_token': token,
     };
-    return _networkClient.postRequest<String>(
+    return networkClient.postRequest<String>(
       Config.host,
       Endpoints.getSession,
       'session_id',
@@ -50,6 +59,7 @@ class AuthApiClient {
     );
   }
 
+  @override
   Future<String> auth({
     required String username,
     required String password,

@@ -3,8 +3,19 @@ import 'package:the_movie_db/domain/api_client/endpoints.dart';
 import 'package:the_movie_db/domain/api_client/network_client.dart';
 import 'package:the_movie_db/domain/server_entities/actors/actor_details.dart';
 
-class ActorApiClient {
-  final NetworkClient _networkClient = NetworkClient();
+abstract class ActorApiClient {
+  Future<ActorDetails> showActor(
+    int actorId,
+    String locale,
+  );
+}
+
+class ActorApiClientBasic implements ActorApiClient {
+  const ActorApiClientBasic({required this.networkClient});
+
+  final NetworkClient networkClient;
+
+  @override
   Future<ActorDetails> showActor(
     int actorId,
     String locale,
@@ -14,7 +25,7 @@ class ActorApiClient {
       return ActorDetails.fromJson(mapJson);
     }
 
-    return _networkClient.getRequest<ActorDetails>(
+    return networkClient.getRequest<ActorDetails>(
       Config.host,
       Endpoints.showActor(actorId),
       parser,

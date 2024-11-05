@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:the_movie_db/domain/factories/screen_factories.dart';
+import 'package:the_movie_db/ui/navigation/main_navigation.dart';
 
 class NewsScreenWidget extends StatelessWidget {
-  const NewsScreenWidget({super.key});
+  const NewsScreenWidget({super.key, required this.screensFactory});
+
+  final ScreensFactory screensFactory;
 
   @override
   Widget build(BuildContext context) {
-    final ScreenFactories screenFactory = ScreenFactories();
     return ListView(
       children: <Widget>[
-        screenFactory.makeTrendingMovies(),
+        screensFactory.makeTrendingMovies(),
         const SizedBox(height: 20),
-        screenFactory.makeNewMovies(),
+        screensFactory.makeNewMovies(),
         const SizedBox(height: 20),
-        screenFactory.makePlayingMovies(),
+        screensFactory.makePlayingMovies(),
       ],
     );
   }

@@ -10,7 +10,10 @@ import 'package:the_movie_db/domain/services/movies_service.dart';
 import 'package:the_movie_db/types/types.dart';
 
 class TrendedViewModel extends ChangeNotifier {
-  TrendedViewModel() {
+  TrendedViewModel({
+    required this.apiClient,
+    required this.movieService,
+  }) {
     trendPeriod = periodValues[0];
   }
 
@@ -19,8 +22,8 @@ class TrendedViewModel extends ChangeNotifier {
   List<bool> isSelectedDay = <bool>[true, false];
   late String trendPeriod;
 
-  final ApiClient _apiClient = ApiClient();
-  final MoviesService _movieService = MoviesService();
+  final ApiClientFactory apiClient;
+  final MoviesService movieService;
 
   final List<Movie> _trendedMovies = <Movie>[];
   List<Movie> get trendedMovies => List<Movie>.unmodifiable(_trendedMovies);
@@ -35,7 +38,7 @@ class TrendedViewModel extends ChangeNotifier {
   String get errorMessage => _errorMessage;
 
   List<DataStructure> makeDataStructure() =>
-      _movieService.makeDataStructure(_trendedMovies, _dateFormat);
+      movieService.makeDataStructure(_trendedMovies, _dateFormat);
 
   Future<PopularMovieResponse?> _loadTrendingMovies(
     String trendPeriod,
@@ -43,7 +46,7 @@ class TrendedViewModel extends ChangeNotifier {
   ) async {
     try {
       final PopularMovieResponse result =
-          await _apiClient.getAllInTrend(trendPeriod, locale);
+          await apiClient.getAllInTrend(trendPeriod, locale);
       return result;
     } on ApiClientException catch (error) {
       _errorMessage = handleErrors(error);

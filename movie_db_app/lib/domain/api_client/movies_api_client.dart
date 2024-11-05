@@ -4,16 +4,40 @@ import 'package:the_movie_db/domain/api_client/network_client.dart';
 import 'package:the_movie_db/domain/server_entities/movie_details/movie_details.dart';
 import 'package:the_movie_db/domain/server_entities/movies/popular_movie_response.dart';
 
-class MoviesApiClient {
-  final NetworkClient _networkClient = NetworkClient();
+abstract class MoviesApiClient {
+  Future<PopularMovieResponse> popularMovie(int page, String locale);
+  Future<PopularMovieResponse> searchMovie(
+    int page,
+    String locale,
+    String query,
+  );
+  Future<MovieDetails> getMovieDetails(
+    int movieId,
+    String locale,
+  );
+  Future<PopularMovieResponse> getNewMovies(
+    String regionValue,
+    String locale,
+  );
+  Future<PopularMovieResponse> getPlayingMovies(
+    String regionValue,
+    String locale,
+  );
+}
 
+class MoviesApiClientBasic implements MoviesApiClient {
+  const MoviesApiClientBasic({required this.networkClient});
+
+  final NetworkClient networkClient;
+
+  @override
   Future<PopularMovieResponse> popularMovie(int page, String locale) async {
     PopularMovieResponse parser(dynamic json, [String? key]) {
       final Map<String, dynamic> mapJson = json as Map<String, dynamic>;
       return PopularMovieResponse.fromJson(mapJson);
     }
 
-    return _networkClient.getRequest<PopularMovieResponse>(
+    return networkClient.getRequest<PopularMovieResponse>(
       Config.host,
       Endpoints.getPopularMovies,
       parser,
@@ -25,6 +49,7 @@ class MoviesApiClient {
     );
   }
 
+  @override
   Future<PopularMovieResponse> searchMovie(
     int page,
     String locale,
@@ -35,7 +60,7 @@ class MoviesApiClient {
       return PopularMovieResponse.fromJson(mapJson);
     }
 
-    return _networkClient.getRequest<PopularMovieResponse>(
+    return networkClient.getRequest<PopularMovieResponse>(
       Config.host,
       Endpoints.searchMovies,
       parser,
@@ -49,6 +74,7 @@ class MoviesApiClient {
     );
   }
 
+  @override
   Future<MovieDetails> getMovieDetails(
     int movieId,
     String locale,
@@ -58,7 +84,7 @@ class MoviesApiClient {
       return MovieDetails.fromJson(mapJson);
     }
 
-    return _networkClient.getRequest<MovieDetails>(
+    return networkClient.getRequest<MovieDetails>(
       Config.host,
       Endpoints.getMovieDetails(movieId),
       parser,
@@ -70,6 +96,7 @@ class MoviesApiClient {
     );
   }
 
+  @override
   Future<PopularMovieResponse> getNewMovies(
     String regionValue,
     String locale,
@@ -79,7 +106,7 @@ class MoviesApiClient {
       return PopularMovieResponse.fromJson(mapJson);
     }
 
-    return _networkClient.getRequest<PopularMovieResponse>(
+    return networkClient.getRequest<PopularMovieResponse>(
       Config.host,
       Endpoints.getMoviesUpcoming,
       parser,
@@ -91,6 +118,7 @@ class MoviesApiClient {
     );
   }
 
+  @override
   Future<PopularMovieResponse> getPlayingMovies(
     String regionValue,
     String locale,
@@ -100,7 +128,7 @@ class MoviesApiClient {
       return PopularMovieResponse.fromJson(mapJson);
     }
 
-    return _networkClient.getRequest<PopularMovieResponse>(
+    return networkClient.getRequest<PopularMovieResponse>(
       Config.host,
       Endpoints.getPlayingMovies,
       parser,

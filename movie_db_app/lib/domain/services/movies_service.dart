@@ -12,36 +12,98 @@ import 'package:the_movie_db/domain/server_entities/show_details/show_details.da
 import 'package:the_movie_db/library/dates/handle_dates.dart';
 import 'package:the_movie_db/types/types.dart';
 
-class MoviesService {
-  final ApiClient _apiClient = ApiClient();
-  final SessionDataProvider sessionProvider = SessionDataProvider();
+abstract class MoviesService {
+  Future<PopularMovieResponse> getPopularMovies(
+    int page,
+    String locale,
+  );
+  Future<PopularMovieResponse> getPopularShows(
+    int page,
+    String locale,
+  );
+  Future<PopularMovieResponse> searchMovies(
+    int page,
+    String locale,
+    String query,
+  );
+  Future<PopularMovieResponse> searchShows(
+    int page,
+    String locale,
+    String query,
+  );
+  List<DataStructure> makeDataStructure(
+    List<Movie> movies,
+    DateFormat dateFormat,
+  );
+  MovieListRowData makeRowData(Movie movie, DateFormat dateFormat);
+  void handleAPIClientException(
+    ApiClientException error,
+    Function()? onSessionExpired,
+  );
+  List<bool> changeSelector(List<bool> current, int index);
+  Future<MoviesDetailsLocal> loadMovieDetails({
+    required int movieId,
+    required String locale,
+  });
+  Future<ShowsDetailsLocal> loadShowDetails({
+    required int showId,
+    required String locale,
+  });
+  Future<void> postInFavoriteOnClick({
+    required int movieId,
+    required bool isFavorite,
+    required MediaType mediaType,
+  });
+  Future<PopularMovieResponse?> getFavoriteMovies({
+    required int page,
+    required String locale,
+  });
+  Future<PopularMovieResponse?> getFavoriteShows({
+    required int page,
+    required String locale,
+  });
+}
 
+class MoviesServiceBasic implements MoviesService {
+  const MoviesServiceBasic({
+    required this.apiClient,
+    required this.sessionDataProvider,
+  });
+
+  final ApiClientFactory apiClient;
+  final SessionDataProvider sessionDataProvider;
+
+  @override
   Future<PopularMovieResponse> getPopularMovies(
     int page,
     String locale,
   ) =>
-      _apiClient.popularMovie(page, locale);
+      apiClient.popularMovie(page, locale);
 
+  @override
   Future<PopularMovieResponse> getPopularShows(
     int page,
     String locale,
   ) =>
-      _apiClient.popularShows(page, locale);
+      apiClient.popularShows(page, locale);
 
+  @override
   Future<PopularMovieResponse> searchMovies(
     int page,
     String locale,
     String query,
   ) =>
-      _apiClient.searchMovie(page, locale, query);
+      apiClient.searchMovie(page, locale, query);
 
+  @override
   Future<PopularMovieResponse> searchShows(
     int page,
     String locale,
     String query,
   ) =>
-      _apiClient.searchTV(page, locale, query);
+      apiClient.searchTV(page, locale, query);
 
+  @override
   List<DataStructure> makeDataStructure(
     List<Movie> movies,
     DateFormat dateFormat,
@@ -62,6 +124,7 @@ class MoviesService {
           )
           .toList();
 
+  @override
   MovieListRowData makeRowData(Movie movie, DateFormat dateFormat) {
     final DateTime? movieDate = movie.releaseDate;
     final DateTime? showDate = movie.firstAirDate;
@@ -81,6 +144,7 @@ class MoviesService {
     );
   }
 
+  @override
   List<bool> changeSelector(List<bool> current, int index) {
     return current
         .asMap()
@@ -89,6 +153,7 @@ class MoviesService {
         .toList();
   }
 
+  @override
   void handleAPIClientException(
     ApiClientException error,
     Function()? onSessionExpired,
@@ -101,16 +166,17 @@ class MoviesService {
     }
   }
 
+  @override
   Future<MoviesDetailsLocal> loadMovieDetails({
     required int movieId,
     required String locale,
   }) async {
     final MovieDetails movieDetails =
-        await _apiClient.getMovieDetails(movieId, locale);
-    final String? token = await sessionProvider.getSessionId();
+        await apiClient.getMovieDetails(movieId, locale);
+    final String? token = await sessionDataProvider.getSessionId();
     bool isFavorite = false;
     if (token != null) {
-      final String result = await _apiClient.isMovieInFavorites(movieId, token);
+      final String result = await apiClient.isMovieInFavorites(movieId, token);
       isFavorite = result == 'true';
     }
     return MoviesDetailsLocal(
@@ -119,16 +185,17 @@ class MoviesService {
     );
   }
 
+  @override
   Future<ShowsDetailsLocal> loadShowDetails({
     required int showId,
     required String locale,
   }) async {
     final ShowDetails showDetails =
-        await _apiClient.getShowDetails(showId, locale);
-    final String? token = await sessionProvider.getSessionId();
+        await apiClient.getShowDetails(showId, locale);
+    final String? token = await sessionDataProvider.getSessionId();
     bool isFavorite = false;
     if (token != null) {
-      final String result = await _apiClient.isShowInFavorites(showId, token);
+      final String result = await apiClient.isShowInFavorites(showId, token);
       isFavorite = result == 'true';
     }
     return ShowsDetailsLocal(
@@ -137,16 +204,17 @@ class MoviesService {
     );
   }
 
+  @override
   Future<void> postInFavoriteOnClick({
     required int movieId,
     required bool isFavorite,
     required MediaType mediaType,
   }) async {
-    final String? token = await sessionProvider.getSessionId();
+    final String? token = await sessionDataProvider.getSessionId();
     if (token == null) {
       return;
     }
-    await _apiClient.postInFavorites(
+    await apiClient.postInFavorites(
       mediaType: mediaType,
       mediaId: movieId,
       isFavorite: !isFavorite,
@@ -154,25 +222,27 @@ class MoviesService {
     );
   }
 
+  @override
   Future<PopularMovieResponse?> getFavoriteMovies({
     required int page,
     required String locale,
   }) async {
-    final String? token = await sessionProvider.getSessionId();
+    final String? token = await sessionDataProvider.getSessionId();
     if (token == null) {
       return null;
     }
-    return _apiClient.getFavoriteMovies(locale, page, token);
+    return apiClient.getFavoriteMovies(locale, page, token);
   }
 
+  @override
   Future<PopularMovieResponse?> getFavoriteShows({
     required int page,
     required String locale,
   }) async {
-    final String? token = await sessionProvider.getSessionId();
+    final String? token = await sessionDataProvider.getSessionId();
     if (token == null) {
       return null;
     }
-    return _apiClient.getFavoriteShows(locale, page, token);
+    return apiClient.getFavoriteShows(locale, page, token);
   }
 }

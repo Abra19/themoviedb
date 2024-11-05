@@ -7,13 +7,13 @@ import 'package:the_movie_db/domain/server_entities/movies/movies.dart';
 import 'package:the_movie_db/domain/services/movies_service.dart';
 import 'package:the_movie_db/library/paginators/paginatator.dart';
 import 'package:the_movie_db/types/types.dart';
-import 'package:the_movie_db/ui/navigation/main_navigation.dart';
+import 'package:the_movie_db/ui/navigation/main_navigation_routes.dart';
 
 class MoviesViewModel extends ChangeNotifier {
-  MoviesViewModel() {
+  MoviesViewModel(this.moviesService) {
     _popularMoviesPaginator = Paginator<Movie>((int page) async {
       final PopularMovieResponse result =
-          await _moviesService.getPopularMovies(page, _localeStorage.localeTag);
+          await moviesService.getPopularMovies(page, _localeStorage.localeTag);
       return PaginatorLoadResult<Movie>(
         entities: result.movies,
         currentPage: result.page,
@@ -21,7 +21,7 @@ class MoviesViewModel extends ChangeNotifier {
       );
     });
     _searchMoviesPaginator = Paginator<Movie>((int page) async {
-      final PopularMovieResponse result = await _moviesService.searchMovies(
+      final PopularMovieResponse result = await moviesService.searchMovies(
         page,
         _localeStorage.localeTag,
         _searchQuery,
@@ -33,7 +33,7 @@ class MoviesViewModel extends ChangeNotifier {
       );
     });
   }
-  final MoviesService _moviesService = MoviesService();
+  final MoviesService moviesService;
   late final Paginator<Movie> _popularMoviesPaginator;
   late final Paginator<Movie> _searchMoviesPaginator;
 
@@ -59,13 +59,13 @@ class MoviesViewModel extends ChangeNotifier {
       _errorMessage = await _searchMoviesPaginator.loadNextPage();
       _movies = _searchMoviesPaginator.entities.map((Movie movie) {
         movie.mediaType = 'movie';
-        return _moviesService.makeRowData(movie, _dateFormat);
+        return moviesService.makeRowData(movie, _dateFormat);
       }).toList();
     } else {
       _errorMessage = await _popularMoviesPaginator.loadNextPage();
       _movies = _popularMoviesPaginator.entities.map((Movie movie) {
         movie.mediaType = 'movie';
-        return _moviesService.makeRowData(movie, _dateFormat);
+        return moviesService.makeRowData(movie, _dateFormat);
       }).toList();
     }
     notifyListeners();
